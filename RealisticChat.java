@@ -46,7 +46,7 @@ class RealisticChatListener implements Listener {
         }
 
         // Whispering decreases range
-        int whisper = countWhisper(message);
+        int whisper = countParenthesizeNests(message);
         if (whisper > 0) {
             int delta = plugin.getConfig().getInt("whisperRangeDecrease", 10) * whisper;
             hearingRangeMeters -= delta;
@@ -106,14 +106,16 @@ class RealisticChatListener implements Listener {
 
         return yell;
     }
-   
-    private int countWhisper(String message) {
-        // TODO: parenthesized further for quieter whisper
-        if (message.startsWith("(") && message.endsWith(")")) {
-            return 1;
-        } else {
-            return 0;
+  
+    /** Count number of nested surrounding parenthesizes
+     */
+    private int countParenthesizeNests(String message) {
+        int whisper = 0;
+        while (message.length() > 2 && message.startsWith("(") && message.endsWith(")")) {
+            message = message.substring(1, message.length() - 1);
+            whisper += 1;
         }
+        return whisper;
     }
 
     /** Randomly "break up" a message as if it was incompletely heard
