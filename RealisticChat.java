@@ -37,6 +37,7 @@ class RealisticChatListener implements Listener {
 
             if (!sender.getWorld().equals(recipient.getWorld())) {
                 // Not in this world!
+                // TODO: cross-world communication device?
                 event.getRecipients().remove(recipient);
                 continue;
             }
@@ -44,8 +45,16 @@ class RealisticChatListener implements Listener {
             double distance = sender.getLocation().distance(recipient.getLocation());
 
             plugin.log.info("distance="+distance);
-            // TODO: limit
-            // TODO: scramble
+
+            // Limit distance
+            if (distance > plugin.getConfig().getInt("hearingRangeMeters", 50)) {
+                // TODO: earphones?
+                event.getRecipients().remove(recipient);
+                continue;
+            }
+            if (distance > plugin.getConfig().getInt("scrambleRangeMeters", 25)) {
+                // TODO: delete random letters
+            }
         }
     }
 }
