@@ -39,7 +39,7 @@ class RealisticChatListener implements Listener {
             if (sender.equals(recipient)) {
                 // Talking to ourselves
                 // TODO: still scramble?
-                deliverMessage(recipient, sender, message); // TODO: indicate as coming from self?
+                deliverMessage(recipient, sender, message, "self");
                 continue;
             }
 
@@ -50,8 +50,6 @@ class RealisticChatListener implements Listener {
             }
 
             double distance = sender.getLocation().distance(recipient.getLocation());
-
-            plugin.log.info("distance="+distance);
 
             // Limit distance
             if (distance > hearingRangeMeters) {
@@ -68,10 +66,9 @@ class RealisticChatListener implements Listener {
                 double noise = (distance - scrambleRangeMeters) / hearingRangeMeters;
                 double clarity = 1 - noise;
 
-                plugin.log.info("clarity = "+clarity);
-                deliverMessage(recipient, sender, breakUpMessage(message, clarity));
+                deliverMessage(recipient, sender, breakUpMessage(message, clarity), "d="+distance+", clarity="+clarity);
             } else {
-                deliverMessage(recipient, sender, message);
+                deliverMessage(recipient, sender, message, "d="+distance);
             }
         }
 
@@ -108,12 +105,12 @@ class RealisticChatListener implements Listener {
         return new String(newMessage);
     }
 
-    private void deliverMessage(Player recipient, Player sender, String message) {
+    private void deliverMessage(Player recipient, Player sender, String message, String info) {
         ChatColor senderColor = (sender.equals(recipient) ? ChatColor.YELLOW : ChatColor.GREEN);
         ChatColor messageColor = ChatColor.WHITE;
 
         recipient.sendMessage(senderColor + sender.getDisplayName() + ": " + messageColor + message);
-        plugin.log.info("[RealisticChat] "+sender.getName() + " -> " + recipient.getName() + ": " + message);
+        plugin.log.info("[RealisticChat] ("+info+") "+sender.getName() + " -> " + recipient.getName() + ": " + message);
     }
 }
 
