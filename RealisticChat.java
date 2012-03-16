@@ -99,17 +99,20 @@ class RealisticChatListener implements Listener {
 
             if (random.nextDouble() < clarity) {
                 newMessage.appendCodePoint(c);
-                // TODO: third case, dark gray? (barely gets through)
             } else {
                 newMessage.append(' ');
             }
+            // TODO: third case, dark gray? (barely gets through)
         }
 
         return new String(newMessage);
     }
 
     private void deliverMessage(Player recipient, Player sender, String message) {
-        recipient.sendMessage(ChatColor.GREEN + sender.getDisplayName() + ": " + message);
+        ChatColor senderColor = (sender.equals(recipient) ? ChatColor.YELLOW : ChatColor.GREEN);
+        ChatColor messageColor = ChatColor.WHITE;
+
+        recipient.sendMessage(senderColor + sender.getDisplayName() + ": " + messageColor + message);
         plugin.log.info("[RealisticChat] "+sender.getName() + " -> " + recipient.getName() + ": " + message);
     }
 }
