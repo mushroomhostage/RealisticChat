@@ -28,12 +28,16 @@ class RealisticChatListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerChat(PlayerChatEvent event) {
         Player sender = event.getPlayer();
+        String message = event.getMessage();
+
+        plugin.log.info("<" + sender.getName() + "> "+message);
 
         // Send to recipients
         for (Player recipient: event.getRecipients()) {
             if (sender.equals(recipient)) {
                 // Talking to ourselves
                 // TODO: still scramble?
+                deliverMessage(recipient, sender, message); // TODO: indicate as coming from self?
                 continue;
             }
 
@@ -46,8 +50,6 @@ class RealisticChatListener implements Listener {
             double distance = sender.getLocation().distance(recipient.getLocation());
 
             plugin.log.info("distance="+distance);
-
-            String message = event.getMessage();
 
             // Limit distance
             if (distance > plugin.getConfig().getInt("hearingRangeMeters", 50)) {
@@ -85,7 +87,8 @@ class RealisticChatListener implements Listener {
     }
 
     private void deliverMessage(Player recipient, Player sender, String message) {
-        sender.sendMessage(ChatColor.GREEN + sender.getDisplayName() + ": " + message);
+        recipient.sendMessage(ChatColor.GREEN + sender.getDisplayName() + ": " + message);
+        plugin.log.info("[RealisticChat] "+sender.getName() + " -> " + recipient.getName() + ": " + message);
     }
 }
 
