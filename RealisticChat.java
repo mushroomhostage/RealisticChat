@@ -40,11 +40,18 @@ class RealisticChatListener implements Listener {
             int hunger = plugin.getConfig().getInt("hungerPerYell", 1) * yell;
             sender.setFoodLevel(sender.getFoodLevel() - hunger);
 
-            int extra = plugin.getConfig().getInt("yellRangeIncrease", 10) * yell;
-            hearingRangeMeters += extra;
-            scrambleRangeMeters += extra;
+            int delta = plugin.getConfig().getInt("yellRangeIncrease", 10) * yell;
+            hearingRangeMeters += delta;
+            scrambleRangeMeters += delta;
         }
 
+        // Whispering decreases range
+        int whisper = countWhisper(message);
+        if (whisper > 0) {
+            int delta = plugin.getConfig().getInt("whisperRangeDecrease", 10) * whisper;
+            hearingRangeMeters -= delta;
+            scrambleRangeMeters -= delta;
+        }
 
         // Send to recipients
         for (Player recipient: event.getRecipients()) {
@@ -78,9 +85,9 @@ class RealisticChatListener implements Listener {
                 double noise = (distance - scrambleRangeMeters) / hearingRangeMeters;
                 double clarity = 1 - noise;
 
-                deliverMessage(recipient, sender, breakUpMessage(message, clarity), "d="+distance+", clarity="+clarity);
+                deliverMessage(recipient, sender, breakUpMessage(message, clarity), "r="+hearingRangeMeters+", d="+distance+", clarity="+clarity);
             } else {
-                deliverMessage(recipient, sender, message, "d="+distance);
+                deliverMessage(recipient, sender, message, "r="+hearingRangeMeters+", d="+distance);
             }
         }
 
@@ -98,6 +105,15 @@ class RealisticChatListener implements Listener {
         }
 
         return yell;
+    }
+   
+    private int countWhisper(String message) {
+        // TODO: parenthesized further for quieter whisper
+        if (message.startsWith("(") && message.endsWith(")")) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     /** Randomly "break up" a message as if it was incompletely heard
