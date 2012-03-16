@@ -34,14 +34,8 @@ class RealisticChatListener implements Listener {
         int hearingRangeMeters = plugin.getConfig().getInt("hearingRangeMeters", 50);
         int scrambleRangeMeters = plugin.getConfig().getInt("scrambleRangeMeters", 25);
 
-        // Count number of trailing exclaimation marks, and remove (TODO: don't remove?)
-        int yell = 0;
-        while (message.length() > 1 && message.endsWith("!")) {
-            message = message.substring(0, message.length() - 1);
-            yell += 1;
-        }
-
         // Yelling costs hunger and increases range
+        int yell = countExclamationMarks(message);
         if (yell > 0) {
             int hunger = plugin.getConfig().getInt("hungerPerYell", 1) * yell;
             sender.setFoodLevel(sender.getFoodLevel() - hunger);
@@ -92,6 +86,18 @@ class RealisticChatListener implements Listener {
 
         // Deliver the message manually, so we can customize the chat display 
         event.setCancelled(true);
+    }
+
+    /** Count number of trailing exclamation marks
+     */
+    private int countExclamationMarks(String message) {
+        int yell = 0;
+        while (message.length() > 1 && message.endsWith("!")) {
+            message = message.substring(0, message.length() - 1);
+            yell += 1;
+        }
+
+        return yell;
     }
 
     /** Randomly "break up" a message as if it was incompletely heard
