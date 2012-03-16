@@ -12,6 +12,7 @@ import org.bukkit.plugin.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.*;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.*;
 
 class RealisticChatListener implements Listener {
@@ -58,13 +59,25 @@ class RealisticChatListener implements Listener {
             scrambleRangeMeters -= delta;
         }
 
+        // Megaphone
+        ItemStack senderHeld = sender.getItemInHand();
+        if (senderHeld != null && senderHeld.getType() == Material.DIAMOND) { // TODO: configurable item
+            sendInfo.add("mega");
+            int factor = 2;  // TODO: hold more, increase more? but need a cap, base and max
+            hearingRangeMeters *= factor;
+            scrambleRangeMeters *= factor;
+            // TODO: should only increase in a conical volume in front of the player! Like a real megaphone
+        }
+
+        // Log that the player tried to talk
         sendInfo.add("r="+hearingRangeMeters+"/"+scrambleRangeMeters);
-        
         plugin.log.info("<" + sender.getName() + ": "+joinList(sendInfo)+"> "+message);
 
         // Send to recipients
         for (Player recipient: event.getRecipients()) {
             ArrayList<String> recvInfo = new ArrayList<String>();
+
+            // TODO: special item to hold, to receive all or send to all (infinity compass?)
 
             if (sender.equals(recipient)) {
                 // Talking to ourselves
