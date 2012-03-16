@@ -4,6 +4,7 @@ package me.exphc.RealisticChat;
 import java.util.logging.Logger;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Random;
 
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,8 +29,7 @@ class RealisticChatListener implements Listener {
     public void onPlayerChat(PlayerChatEvent event) {
         Player sender = event.getPlayer();
         String message = event.getMessage();
-
-        plugin.log.info("<" + sender.getName() + "> "+message);
+        ArrayList<String> sendInfo = new ArrayList<String>();
 
         int hearingRangeMeters = plugin.getConfig().getInt("hearingRangeMeters", 50);
         int scrambleRangeMeters = plugin.getConfig().getInt("scrambleRangeMeters", 25);
@@ -37,8 +37,11 @@ class RealisticChatListener implements Listener {
         // Yelling costs hunger and increases range
         int yell = countExclamationMarks(message);
         if (yell > 0) {
+            sendInfo.add("yell="+yell);
+
             int hunger = plugin.getConfig().getInt("hungerPerYell", 1) * yell;
             sender.setFoodLevel(sender.getFoodLevel() - hunger);
+
 
             int delta = plugin.getConfig().getInt("yellRangeIncrease", 10) * yell;
             hearingRangeMeters += delta;
@@ -48,17 +51,25 @@ class RealisticChatListener implements Listener {
         // Whispering decreases range
         int whisper = countParenthesizeNests(message);
         if (whisper > 0) {
+            sendInfo.add("whisper="+whisper);
+
             int delta = plugin.getConfig().getInt("whisperRangeDecrease", 10) * whisper;
             hearingRangeMeters -= delta;
             scrambleRangeMeters -= delta;
         }
 
+        sendInfo.add("r="+hearingRangeMeters+"/"+scrambleRangeMeters);
+        
+        plugin.log.info("<" + sender.getName() + ": "+joinList(sendInfo)+"> "+message);
+
         // Send to recipients
         for (Player recipient: event.getRecipients()) {
+            ArrayList<String> recvInfo = new ArrayList<String>();
+
             if (sender.equals(recipient)) {
                 // Talking to ourselves
                 // TODO: still scramble? if talking through something
-                deliverMessage(recipient, sender, message, "self");
+                deliverMessage(recipient, sender, message, recvInfo);
                 continue;
             }
 
@@ -69,6 +80,8 @@ class RealisticChatListener implements Listener {
             }
 
             double distance = sender.getLocation().distance(recipient.getLocation());
+
+            recvInfo.add("d="+distance);
 
             // Limit distance
             if (distance > hearingRangeMeters) {
@@ -85,14 +98,29 @@ class RealisticChatListener implements Listener {
                 double noise = (distance - scrambleRangeMeters) / hearingRangeMeters;
                 double clarity = 1 - noise;
 
-                deliverMessage(recipient, sender, breakUpMessage(message, clarity), "r="+hearingRangeMeters+", d="+distance+", clarity="+clarity);
+                recvInfo.add("clarity="+clarity);
+
+                deliverMessage(recipient, sender, breakUpMessage(message, clarity), recvInfo);
             } else {
-                deliverMessage(recipient, sender, message, "r="+hearingRangeMeters+", d="+distance);
+                deliverMessage(recipient, sender, message, recvInfo);
             }
         }
 
         // Deliver the message manually, so we can customize the chat display 
         event.setCancelled(true);
+    }
+
+    private String joinList(ArrayList<String> list) {
+        StringBuilder sb = new StringBuilder();
+        for (String item: list) {
+            sb.append(item + ",");
+        }
+        String s = sb.toString();
+        if (s.length() == 0) {
+            return "";
+        } else {
+            return s.substring(0, s.length() - 1);
+        } 
     }
 
     /** Count number of trailing exclamation marks
@@ -147,12 +175,12 @@ class RealisticChatListener implements Listener {
         return new String(newMessage);
     }
 
-    private void deliverMessage(Player recipient, Player sender, String message, String info) {
+    private void deliverMessage(Player recipient, Player sender, String message, ArrayList<String> info) {
         ChatColor senderColor = (sender.equals(recipient) ? ChatColor.YELLOW : ChatColor.GREEN);
         ChatColor messageColor = ChatColor.WHITE;
 
         recipient.sendMessage(senderColor + sender.getDisplayName() + ": " + messageColor + message);
-        plugin.log.info("[RealisticChat] ("+info+") "+sender.getName() + " -> " + recipient.getName() + ": " + message);
+        plugin.log.info("[RealisticChat] ("+joinList(info)+") "+sender.getName() + " -> " + recipient.getName() + ": " + message);
     }
 }
 
