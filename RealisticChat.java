@@ -34,11 +34,29 @@ class RealisticChatListener implements Listener {
         int hearingRangeMeters = plugin.getConfig().getInt("hearingRangeMeters", 50);
         int scrambleRangeMeters = plugin.getConfig().getInt("scrambleRangeMeters", 25);
 
+        // Count number of trailing exclaimation marks, and remove (TODO: don't remove?)
+        int yell = 0;
+        while (message.length() > 1 && message.endsWith("!")) {
+            message = message.substring(0, message.length() - 1);
+            yell += 1;
+        }
+
+        // Yelling costs hunger and increases range
+        if (yell > 0) {
+            int hunger = plugin.getConfig().getInt("hungerPerYell", 1) * yell;
+            sender.setFoodLevel(sender.getFoodLevel() - hunger);
+
+            int extra = plugin.getConfig().getInt("yellRangeIncrease", 10) * yell;
+            hearingRangeMeters += extra;
+            scrambleRangeMeters += extra;
+        }
+
+
         // Send to recipients
         for (Player recipient: event.getRecipients()) {
             if (sender.equals(recipient)) {
                 // Talking to ourselves
-                // TODO: still scramble?
+                // TODO: still scramble? if talking through something
                 deliverMessage(recipient, sender, message, "self");
                 continue;
             }
