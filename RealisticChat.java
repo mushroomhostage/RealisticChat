@@ -148,8 +148,19 @@ class RealisticChatListener implements Listener {
     /** Get whether the player has a walkie-talkie ready for listening.
     */
     private boolean hasWalkieListening(Player player) {
-        // TODO: check if radio is in _hotbar_ slots, not necessarily hand
-        return hasWalkieTalking(player);
+        ItemStack[] contents = player.getInventory().getContents();
+
+        final int HOTBAR_SIZE = 9;
+        // Player can hear walkie if placed anywhere within their hotbar slots (not elsewhere)
+        for (int i = 0; i < HOTBAR_SIZE; i += 1) {
+            ItemStack item = contents[i];
+
+            if (item != null && item.getType() == Material.COMPASS) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
