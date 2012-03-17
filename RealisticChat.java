@@ -32,8 +32,8 @@ class RealisticChatListener implements Listener {
         String message = event.getMessage();
         ArrayList<String> sendInfo = new ArrayList<String>();
 
-        int hearingRangeMeters = plugin.getConfig().getInt("hearingRangeMeters", 50);
-        int scrambleRangeMeters = plugin.getConfig().getInt("scrambleRangeMeters", 25); // TODO: make a divisor/factor, instead of a separate value
+        double hearingRangeMeters = plugin.getConfig().getDouble("hearingRangeMeters", 50.0);
+        double scrambleRangeDivisor = plugin.getConfig().getDouble("scrambleRangeDivisor", 2.0); // so last 1/2.0 (half) of distance, speech is unclear
 
         // Yelling costs hunger and increases range
         int yell = countExclamationMarks(message);
@@ -52,7 +52,6 @@ class RealisticChatListener implements Listener {
 
             int delta = plugin.getConfig().getInt("yell."+yell+".rangeIncrease", defaultRangeIncrease[yell - 1]);
             hearingRangeMeters += delta;
-            scrambleRangeMeters += delta;
         }
 
         // Whispering decreases range
@@ -62,7 +61,6 @@ class RealisticChatListener implements Listener {
 
             int delta = plugin.getConfig().getInt("whisperRangeDecrease", 10) * whisper;
             hearingRangeMeters -= delta;
-            scrambleRangeMeters -= delta;
         }
 
         // Megaphone
@@ -71,12 +69,12 @@ class RealisticChatListener implements Listener {
             sendInfo.add("mega");
             int factor = 2;  // TODO: hold more, increase more? but need a cap, base and max
             hearingRangeMeters *= factor;
-            scrambleRangeMeters *= factor;
             // TODO: should only increase in a conical volume in front of the player! Like a real megaphone
         }
 
         // Log that the player tried to talk
-        sendInfo.add("r="+hearingRangeMeters+"/"+scrambleRangeMeters);
+        double clearRangeMeters = hearingRangeMeters / scrambleRangeDivisor;
+        sendInfo.add("r="+hearingRangeMeters+"/"+clearRangeMeters);
         plugin.log.info("<" + sender.getName() + ": "+joinList(sendInfo)+"> "+message);
 
         // Send to recipients
@@ -119,16 +117,18 @@ class RealisticChatListener implements Listener {
             // Limit distance
             if (distance > hearingRangeMeters) {
                 // TODO: earphones? to receive further
+                // better yet: http://en.wikipedia.org/wiki/Ear_trumpet
                 continue;
             }
-            if (distance > scrambleRangeMeters) {
+
+            if (distance > clearRangeMeters) {
                 // At distances hearingRangeMeters..scrambleRangeMeters (50..25), break up
                 // with increasing probability the further away they are.
                 // 24 = perfectly clear
                 // 25 = slightly garbled
                 // (distance-25)/50
                 // 50 = half clear
-                double noise = (distance - scrambleRangeMeters) / hearingRangeMeters;
+                double noise = (distance - clearRangeMeters) / hearingRangeMeters;
                 double clarity = 1 - noise;
 
                 recvInfo.add("clarity="+clarity);
