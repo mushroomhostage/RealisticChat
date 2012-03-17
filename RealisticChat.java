@@ -96,22 +96,17 @@ class RealisticChatListener implements Listener {
             recvInfo.add("d="+distance);
 
             // Talking into walkie-talkie device
-            ItemStack senderHolding = sender.getItemInHand();
-            if (senderHolding != null && senderHolding.getType() == Material.COMPASS) { // TODO: configurable
-                ItemStack recipientHolding = recipient.getItemInHand();
-                // Is recipient also listening to their walkie?
-                if (recipientHolding != null && recipientHolding.getType() == Material.COMPASS) { // TODO: hold anywhere in hotbar to receive
-                    if (distance < plugin.getConfig().getInt("walkieRange", 1000)) {
-                        ArrayList<String> recvInfoWalkie = new ArrayList<String>(recvInfo);
+            if (hasWalkieTalking(sender) && hasWalkieListening(recipient)) {
+                if (distance < plugin.getConfig().getInt("walkieRange", 1000)) {
+                    ArrayList<String> recvInfoWalkie = new ArrayList<String>(recvInfo);
 
-                        recvInfoWalkie.add("walkie");
+                    recvInfoWalkie.add("walkie");
 
-                        // TODO: reduce clarity if too far away, like with normal chat
-                        // TODO: show as from walkie-talkie, but with callsign of sender?
-                        deliverMessage(recipient, sender, "[via walkie] " + message, recvInfoWalkie);
+                    // TODO: reduce clarity if too far away, like with normal chat
+                    // TODO: show as from walkie-talkie, but with callsign of sender?
+                    deliverMessage(recipient, sender, "[via walkie] " + message, recvInfoWalkie);
 
-                        // also fall through and deliver message locally
-                    }
+                    // also fall through and deliver message locally
                 }
             }
 
@@ -141,6 +136,22 @@ class RealisticChatListener implements Listener {
         // Deliver the message manually, so we can customize the chat display 
         event.setCancelled(true);
     }
+
+    /** Get whether the player has a walkie-talkie ready to talk into.
+    */
+    private boolean hasWalkieTalking(Player player) {
+        ItemStack held = player.getItemInHand();
+        
+        return held != null && held.getType() == Material.COMPASS; // TODO: configurable
+    }
+
+    /** Get whether the player has a walkie-talkie ready for listening.
+    */
+    private boolean hasWalkieListening(Player player) {
+        // TODO: check if radio is in _hotbar_ slots, not necessarily hand
+        return hasWalkieTalking(player);
+    }
+
 
     private String joinList(ArrayList<String> list) {
         StringBuilder sb = new StringBuilder();
