@@ -33,18 +33,24 @@ class RealisticChatListener implements Listener {
         ArrayList<String> sendInfo = new ArrayList<String>();
 
         int hearingRangeMeters = plugin.getConfig().getInt("hearingRangeMeters", 50);
-        int scrambleRangeMeters = plugin.getConfig().getInt("scrambleRangeMeters", 25);
+        int scrambleRangeMeters = plugin.getConfig().getInt("scrambleRangeMeters", 25); // TODO: make a divisor/factor, instead of a separate value
 
         // Yelling costs hunger and increases range
         int yell = countExclamationMarks(message);
         if (yell > 0) {
+            yell = Math.min(yell, plugin.getConfig().getInt("yellMax", 4));
+
             sendInfo.add("yell="+yell);
 
-            int hunger = plugin.getConfig().getInt("hungerPerYell", 1) * yell;
+            final int defaultHunger[] = { 1, 2, 4, 20 };
+            final int defaultRangeIncrease[] = { 10, 50, 100, 500 };
+
+            int hunger = plugin.getConfig().getInt("yell."+yell+".hunger", defaultHunger[yell - 1]);
+            // TODO: check food level first, and clamp yell if insufficient (or take away health hearts too?)
             sender.setFoodLevel(sender.getFoodLevel() - hunger);
 
 
-            int delta = plugin.getConfig().getInt("yellRangeIncrease", 10) * yell;
+            int delta = plugin.getConfig().getInt("yell."+yell+".rangeIncrease", defaultRangeIncrease[yell - 1]);
             hearingRangeMeters += delta;
             scrambleRangeMeters += delta;
         }
