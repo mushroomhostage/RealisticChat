@@ -114,10 +114,11 @@ class RealisticChatListener implements Listener {
                 }
             }
 
+            // TODO: earphones? to receive further
+            // better yet: http://en.wikipedia.org/wiki/Ear_trumpet - 1600s precursor to modern electric hearing aid
+
             // Limit distance
             if (distance > hearingRangeMeters) {
-                // TODO: earphones? to receive further
-                // better yet: http://en.wikipedia.org/wiki/Ear_trumpet
                 continue;
             }
 

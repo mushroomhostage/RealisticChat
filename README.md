@@ -1,9 +1,30 @@
-TODO
+RealisticChat - local chat with added realism!
 
 Features:
-* Local chat within 50 m
-* Garbled chat beyond 25 m
-* Yelling! to increase range, at the cost of hunger
-* (Whispering) to decrease range
-* Megaphone (held diamond) to multiply range
+* Local chat 
+* Shouting 
+* Whispering
+* Megaphones
+* Walkie-talkies
+
+## Usage
+
+
+## Commands and Permissions
+None
+
+## Configuration
+hearingRangeMeters: 
+
+scrambleRangeDivisor: 2.0
+
+yellMax: 4
+
+yell.#.hunger: 
+yell.#.rangeIncrease:
+
+whisperRangeDecrease: 
+
+walkieTalkieRange: 1000
+
 
