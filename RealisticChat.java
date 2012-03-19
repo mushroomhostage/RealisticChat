@@ -67,8 +67,7 @@ class RealisticChatListener implements Listener {
         }
 
         // Megaphone
-        ItemStack senderHeld = sender.getItemInHand();
-        if (senderHeld != null && senderHeld.getType() == Material.DIAMOND) { // TODO: configurable item
+        if (hasMegaphone(sender)) {
             sendInfo.add("mega");
             double factor = plugin.getConfig().getDouble("megaphoneFactor", 2.0);  // TODO: hold more, increase more? but need a cap, base and max
             hearingRangeMeters *= factor;
@@ -174,6 +173,14 @@ class RealisticChatListener implements Listener {
         return false;
     }
 
+    /** Get whether the player has a megaphone to talk into.
+    */
+    private boolean hasMegaphone(Player player) {
+        ItemStack held = player.getItemInHand();
+
+        return held != null && held.getType() == Material.DIAMOND; // TODO: configurable
+    }
+
 
     private String joinList(ArrayList<String> list) {
         StringBuilder sb = new StringBuilder();
@@ -254,8 +261,7 @@ class RealisticChatListener implements Listener {
     	double recZ = recipient.getLocation().getZ();
     	double senX = sender.getLocation().getX();
     	double senZ = sender.getLocation().getZ();
-        ItemStack senderHeld = sender.getItemInHand();
-    	if (senderHeld != null && senderHeld.getType() == Material.DIAMOND){
+    	if (hasMegaphone(sender)) {
     		if (recZ > senZ)
     			addition = addition + "[North";
     		if (recZ < senZ)

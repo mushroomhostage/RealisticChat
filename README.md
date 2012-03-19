@@ -7,6 +7,7 @@ Features:
 * Local chat 
 * Yelling
 * Whispering
+* Megaphones
 * Walkie-talkies
 
 ## Usage
@@ -22,6 +23,10 @@ However, yelling comes at the cost of decreasing your hunger level!
 If you want to talk to people very close by but hide your chat from others further away, you
 can decrease your chat range by **whispering**, for example: "*(lets go)*". Only players within
 10 m will be able to hear your whispering, and only those within 5 m will be able to hear you clearly.
+
+To further increase your chat range, speak while holding a megaphone (diamond). This will double your
+chat range, and can be used in conjunction with yelling. Players hearing messages from megaphones
+will recognize the direction it is coming from.
 
 For long-range communication, use a **walkie talkie** (compass). Hold the compass in your *hand*
 and speak as normal, and your voice will be transmitted through the device up to 1000 meters
@@ -51,6 +56,8 @@ each yelling level.
 **whisperRangeDecrease** (40.0): Distance to decrease the chat range when whispering (parenthesized chat).
 For example, 40.0 will decrease the normal 50.0 range to 10.0 meters maximum. The garble range divisor still
 applies, so (by default) only those 10.0/2 = 5.0 meters away will hear you clearly.
+
+**megaphoneFactor** (2.0): Multiply chat range by this value when player is holding a megaphone (diamond).
 
 **walkieRange** (1000.0): The range of walkie talkies.
 
