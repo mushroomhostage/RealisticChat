@@ -105,9 +105,9 @@ class RealisticChatListener implements Listener {
 
             // Talking into walkie-talkie device
             if (hasWalkieTalking(sender) && hasWalkieListening(recipient)) {
-                if (distance < plugin.getConfig().getDouble("walkieRange", 1000.0)) {
-                    ArrayList<String> recvInfoWalkie = new ArrayList<String>(recvInfo);
+                ArrayList<String> recvInfoWalkie = new ArrayList<String>(recvInfo);
 
+                if (distance < plugin.getConfig().getDouble("walkieRange", 1000.0)) {
                     recvInfoWalkie.add("walkie");
 
                     // TODO: reduce clarity if too far away, like with normal chat
