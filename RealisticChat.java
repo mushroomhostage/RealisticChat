@@ -107,19 +107,25 @@ class RealisticChatListener implements Listener {
             if (hasWalkieTalking(sender) && hasWalkieListening(recipient)) {
                 ArrayList<String> recvInfoWalkie = new ArrayList<String>(recvInfo);
 
-                if (distance < plugin.getConfig().getDouble("walkieRange", 1000.0)) {
-                    recvInfoWalkie.add("walkie");
+                double walkieMaxRange = plugin.getConfig().getDouble("walkieRangeMeters", 2000.0);
+                double walkieGarbleDivisor = plugin.getConfig().getDouble("walkieGarbleDivisor", 2.0);
+                double walkieClearRange = walkieMaxRange / walkieGarbleDivisor;
 
-                    // TODO: reduce clarity if too far away, like with normal chat
-                    // TODO: show as from walkie-talkie, but with callsign of sender?
+                recvInfoWalkie.add("walkie="+walkieMaxRange+"/"+walkieClearRange);
+
+                if (distance < walkieClearRange){
+                    // Coming in loud and clear!
+                    // TODO: show as from walkie-talkie, but with callsign of sender? (instead of "foo:[via walkie]" "walkie:foo")
                     deliverMessage(recipient, sender, "[via walkie] " + message, recvInfoWalkie);
+                } else if (distance < walkieMaxRange) {
+                    // Can't quite make you out..
+                    double walkieClarity = 1 - ((distance - walkieClearRange) / walkieMaxRange);
 
-                    // also fall through and deliver message locally
+                    recvInfoWalkie.add("wc="+walkieClarity);
+
+                	deliverMessage(recipient, sender, "[via walkie] " + breakUpMessage(message, walkieClarity), recvInfoWalkie);
                 }
-                if (distance < 2000){
-                	double clear = 1 - ((distance - 1000)/1000);
-                	deliverMessage(recipient, sender, "[via walkie] " + breakUpMessage(message, clear), recvInfoWalkie);
-                }
+                // also fall through and deliver message locally
             }
 
             double hearingRange = speakingRange;
