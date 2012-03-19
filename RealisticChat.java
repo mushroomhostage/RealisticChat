@@ -134,9 +134,9 @@ class RealisticChatListener implements Listener {
 
                 recvInfo.add("clarity="+clarity);
 
-                deliverMessage(recipient, sender, breakUpMessage(message, clarity), recvInfo);
+                deliverMessage(recipient, sender, megaphoneDirection(recipient, sender) + breakUpMessage(message, clarity), recvInfo);
             } else {
-                deliverMessage(recipient, sender, message, recvInfo);
+                deliverMessage(recipient, sender, megaphoneDirection(recipient, sender) + message, recvInfo);
             }
         }
 
@@ -242,6 +242,25 @@ class RealisticChatListener implements Listener {
 
         recipient.sendMessage(senderColor + sender.getDisplayName() + ": " + messageColor + message);
         plugin.log.info("[RealisticChat] ("+joinList(info)+") "+sender.getName() + " -> " + recipient.getName() + ": " + message);
+    }
+    
+    private String megaphoneDirection(Player recipient, Player sender){
+    	String addition = "";
+    	double recX = recipient.getLocation().getX();
+    	double recZ = recipient.getLocation().getZ();
+    	double senX = sender.getLocation().getX();
+    	double senZ = sender.getLocation().getZ();
+    	if (senderHeld.getType() == Material.DIAMOND){
+    		if (recZ > senZ)
+    			addition = addition + "[North";
+    		if (recZ < senZ)
+    			addition = addition + "[South";
+    		if (recX > senX)
+    			addition = addition + "West]";
+    		if (recX < senX)
+    			addition = addition + "East]";
+    	}
+    	return addition;
     }
 }
 
