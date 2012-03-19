@@ -115,6 +115,10 @@ class RealisticChatListener implements Listener {
 
                     // also fall through and deliver message locally
                 }
+                if (distance < 2000){
+                	double clear = 1 - ((distance - 1000)/1000);
+                	deliverMessage(recipient, sender, "[via walkie] " + breakUpMessage(message, clear), recvInfoWalkie);
+                }
             }
 
             // TODO: earphones? to receive further
