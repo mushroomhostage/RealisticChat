@@ -9,7 +9,7 @@ yell.1.rangeIncrease: 10.0
 yell.2.rangeIncrease: 50.0
 yell.3.rangeIncrease: 100.0
 yell.4.rangeIncrease: 500.0
-whisperRangeDecrease: 10
+whisperRangeDecrease: 40.0
 megaphoneFactor: 2.0        # TODO: document
 walkieRange: 1000.0
 

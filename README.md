@@ -15,18 +15,20 @@ Talk normally. You'll only be able to clearly hear other players within 25 meter
 Beyond 25 up to 50 meters, chat will break up: letters will randomly drop from your
 messages, with increasing probability the greater the distance.
 
-To reach someone further away, you can **yell**. For example: "*help!*". Multiple exclamation
-marks will make you yell louder: "*help!!!!*". Yelling will also make garbled messages clearer.
+To reach someone further away, you can **yell**. For example: "*help!*" adds 10 m. Multiple exclamation
+marks will make you yell louder: "*help!!!!*" adds 500 m. Yelling will also make garbled messages clearer.
 However, yelling comes at the cost of decreasing your hunger level!
 
 If you want to talk to people very close by but hide your chat from others further away, you
 can decrease your chat range by **whispering**, for example: "*(lets go)*". Only players within
-the smaller range will be able to hear your whispering.
+10 m will be able to hear your whispering, and only those within 5 m will be able to hear you clearly.
 
 For long-range communication, use a **walkie talkie** (compass). Hold the compass in your *hand*
 and speak as normal, and your voice will be transmitted through the device up to 1000 meters
 to other players holding a compass anywhere in their *hotbar*. Walkie Talkies are especially
 useful for keeping in touch with other players while travelling.
+
+All distances are configurable to your liking; see below.
 
 ## Commands and Permissions
 None
@@ -46,8 +48,10 @@ half of the maximum hearing range (default 50/2 = 25 m), chat will be garbled.
 **yell.#.rangeIncrease** (10.0, 50.0, 100.0, 500.0): Range increase in meters, beyond the normal range, for
 each yelling level.
 
-**whisperRangeDecrease** (10): Distance to decrease the chat range when whispering (parenthesized chat).
+**whisperRangeDecrease** (40.0): Distance to decrease the chat range when whispering (parenthesized chat).
+For example, 40.0 will decrease the normal 50.0 range to 10.0 meters maximum. The garble range divisor still
+applies, so (by default) only those 10.0/2 = 5.0 meters away will hear you clearly.
 
-**walkieRange** (1000.0): The range of walkie talkies 
+**walkieRange** (1000.0): The range of walkie talkies.
 
 

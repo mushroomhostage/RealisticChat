@@ -32,6 +32,9 @@ class RealisticChatListener implements Listener {
         String message = event.getMessage();
         ArrayList<String> sendInfo = new ArrayList<String>();
 
+        // TODO: change to sound pressure level instead of distance based
+        // see http://en.wikipedia.org/wiki/Sound_pressure#Examples_of_sound_pressure_and_sound_pressure_levels
+        // for added realism, also to allow 130 dB = threshold of pain (player damage), nausea, http://en.wikipedia.org/wiki/Sound_cannon
         double hearingRangeMeters = plugin.getConfig().getDouble("hearingRangeMeters", 50.0);
         double garbleRangeDivisor = plugin.getConfig().getDouble("garbleRangeDivisor", 2.0); // so last 1/2.0 (half) of distance, speech is unclear
 
@@ -49,9 +52,7 @@ class RealisticChatListener implements Listener {
             // TODO: check food level first, and clamp yell if insufficient (or take away health hearts too?)
             sender.setFoodLevel(sender.getFoodLevel() - hunger);
 
-
-            double delta = plugin.getConfig().getInt("yell."+yell+".rangeIncrease", defaultRangeIncrease[yell - 1]);
-            hearingRangeMeters += delta;
+            hearingRangeMeters += plugin.getConfig().getDouble("yell."+yell+".rangeIncrease", defaultRangeIncrease[yell - 1]);
         }
 
         // Whispering decreases range
@@ -59,8 +60,10 @@ class RealisticChatListener implements Listener {
         if (whisper > 0) {
             sendInfo.add("whisper="+whisper);
 
-            int delta = plugin.getConfig().getInt("whisperRangeDecrease", 10) * whisper;
-            hearingRangeMeters -= delta;
+            hearingRangeMeters -= plugin.getConfig().getDouble("whisperRangeDecrease", 40.0) * whisper;
+            if (hearingRangeMeters < 1) {
+                hearingRangeMeters = 1;
+            }
         }
 
         // Megaphone
@@ -70,6 +73,7 @@ class RealisticChatListener implements Listener {
             double factor = plugin.getConfig().getDouble("megaphoneFactor", 2.0);  // TODO: hold more, increase more? but need a cap, base and max
             hearingRangeMeters *= factor;
             // TODO: should only increase in a conical volume in front of the player! Like a real megaphone
+            // http://en.wikipedia.org/wiki/Megaphone
         }
 
         // Log that the player tried to talk
