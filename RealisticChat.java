@@ -33,7 +33,7 @@ class RealisticChatListener implements Listener {
         ArrayList<String> sendInfo = new ArrayList<String>();
 
         double hearingRangeMeters = plugin.getConfig().getDouble("hearingRangeMeters", 50.0);
-        double scrambleRangeDivisor = plugin.getConfig().getDouble("scrambleRangeDivisor", 2.0); // so last 1/2.0 (half) of distance, speech is unclear
+        double garbleRangeDivisor = plugin.getConfig().getDouble("garbleRangeDivisor", 2.0); // so last 1/2.0 (half) of distance, speech is unclear
 
         // Yelling costs hunger and increases range
         int yell = countExclamationMarks(message);
@@ -43,14 +43,14 @@ class RealisticChatListener implements Listener {
             sendInfo.add("yell="+yell);
 
             final int defaultHunger[] = { 1, 2, 4, 20 };
-            final int defaultRangeIncrease[] = { 10, 50, 100, 500 };
+            final double defaultRangeIncrease[] = { 10.0, 50.0, 100.0, 500.0 };
 
             int hunger = plugin.getConfig().getInt("yell."+yell+".hunger", defaultHunger[yell - 1]);
             // TODO: check food level first, and clamp yell if insufficient (or take away health hearts too?)
             sender.setFoodLevel(sender.getFoodLevel() - hunger);
 
 
-            int delta = plugin.getConfig().getInt("yell."+yell+".rangeIncrease", defaultRangeIncrease[yell - 1]);
+            double delta = plugin.getConfig().getInt("yell."+yell+".rangeIncrease", defaultRangeIncrease[yell - 1]);
             hearingRangeMeters += delta;
         }
 
@@ -67,13 +67,13 @@ class RealisticChatListener implements Listener {
         ItemStack senderHeld = sender.getItemInHand();
         if (senderHeld != null && senderHeld.getType() == Material.DIAMOND) { // TODO: configurable item
             sendInfo.add("mega");
-            int factor = 2;  // TODO: hold more, increase more? but need a cap, base and max
+            double factor = plugin.getConfig().getDouble("megaphoneFactor", 2.0);  // TODO: hold more, increase more? but need a cap, base and max
             hearingRangeMeters *= factor;
             // TODO: should only increase in a conical volume in front of the player! Like a real megaphone
         }
 
         // Log that the player tried to talk
-        double clearRangeMeters = hearingRangeMeters / scrambleRangeDivisor;
+        double clearRangeMeters = hearingRangeMeters / garbleRangeDivisor;
         sendInfo.add("r="+hearingRangeMeters+"/"+clearRangeMeters);
         plugin.log.info("<" + sender.getName() + ": "+joinList(sendInfo)+"> "+message);
 
@@ -85,7 +85,7 @@ class RealisticChatListener implements Listener {
 
             if (sender.equals(recipient)) {
                 // Talking to ourselves
-                // TODO: still scramble? if talking through something
+                // TODO: still garble? if talking through something
                 deliverMessage(recipient, sender, message, recvInfo);
                 continue;
             }
@@ -101,7 +101,7 @@ class RealisticChatListener implements Listener {
 
             // Talking into walkie-talkie device
             if (hasWalkieTalking(sender) && hasWalkieListening(recipient)) {
-                if (distance < plugin.getConfig().getInt("walkieRange", 1000)) {
+                if (distance < plugin.getConfig().getDouble("walkieRange", 1000.0)) {
                     ArrayList<String> recvInfoWalkie = new ArrayList<String>(recvInfo);
 
                     recvInfoWalkie.add("walkie");
@@ -123,7 +123,7 @@ class RealisticChatListener implements Listener {
             }
 
             if (distance > clearRangeMeters) {
-                // At distances hearingRangeMeters..scrambleRangeMeters (50..25), break up
+                // At distances hearingRangeMeters..garbleRangeMeters (50..25), break up
                 // with increasing probability the further away they are.
                 // 24 = perfectly clear
                 // 25 = slightly garbled

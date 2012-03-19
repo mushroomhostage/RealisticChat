@@ -1,14 +1,15 @@
 hearingRangeMeters: 50.0
-scrambleRangeDivisor: 2.0
+garbleRangeDivisor: 2.0
 yellMax: 4
 yell.1.hunger: 1
 yell.2.hunger: 2
 yell.3.hunger: 4
 yell.4.hunger: 20
-yell.1.rangeIncrease: 10
-yell.2.rangeIncrease: 50
-yell.3.rangeIncrease: 100
-yell.4.rangeIncrease: 500
+yell.1.rangeIncrease: 10.0
+yell.2.rangeIncrease: 50.0
+yell.3.rangeIncrease: 100.0
+yell.4.rangeIncrease: 500.0
 whisperRangeDecrease: 10
-walkieTalkieRange: 1000
+megaphoneFactor: 2.0
+walkieRange: 1000.0
 
