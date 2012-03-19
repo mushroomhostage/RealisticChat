@@ -8,6 +8,7 @@ Features:
 * Yelling
 * Whispering
 * Megaphones
+* Ear trumpets
 * Walkie-talkies
 
 ## Usage
@@ -24,9 +25,17 @@ If you want to talk to people very close by but hide your chat from others furth
 can decrease your chat range by **whispering**, for example: "*(lets go)*". Only players within
 10 m will be able to hear your whispering, and only those within 5 m will be able to hear you clearly.
 
-To further increase your chat range, speak while holding a megaphone (diamond). This will double your
-chat range, and can be used in conjunction with yelling. Players hearing messages from megaphones
-will recognize the direction it is coming from -- you can use this ability for [acoustic location](http://en.wikipedia.org/wiki/Acoustic_location).
+To further increase your chat range, speak while holding a **megaphone** (diamond). This will double your
+range, and can be used in conjunction with yelling. Players hearing messages from megaphones
+will recognize the direction it is coming from -- you can use this ability for [acoustic location](http://en.wikipedia.org/wiki/Acoustic_location)
+if you get lost.
+
+For stealthily listening in for covert operations, wear an **ear trumpet**. A precursor from the 1600s
+to the modern hearing aid, the [ear trumpet](http://en.wikipedia.org/wiki/Ear_trumpet) can increase
+your hearing range significantly, but has no effect on your speaking range, allowing you to eavesdrop
+on enemy bases from a safe distance while talking casually as normal with your partners in crime.
+Craft it in the shape of a helmet with a diamond in the center, out of wooden planks (+100 m), leather (+150 m), or iron (+400 m),
+then wear it on your head as armor for improved hearing. It has the same durability as a Golden Helmet.
 
 For long-range communication, use a **walkie talkie** (compass). Hold the compass in your *hand*
 and speak as normal, and your voice will be transmitted through the device up to 1000 meters
@@ -61,6 +70,13 @@ applies, so (by default) only those 10.0/2 = 5.0 meters away will hear you clear
 **megaphoneEnable** (true): Enable or disable megaphones. 
 
 **megaphoneFactor** (2.0): Multiply chat range by this value when player is holding a megaphone (diamond).
+
+**earTrumpetEnable** (true): Enable or disable ear trumpets.
+
+**earTrumpetEnableCrafting** (true): Enable or disable crafting of ear trumpets.
+
+**earTrumpet.#.rangeIncrease** (100.0, 150.0, 400.0): Hearing range increase for each of the tiers of ear trumpets.
+The wearer will be able to hear (but not speak) up to this increased range.
 
 **walkieEnable** (true): Enable or disable walkie talkies.
 

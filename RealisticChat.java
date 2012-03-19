@@ -219,7 +219,7 @@ class RealisticChatListener implements Listener {
             level = 3;
         }
 
-        final double[] defaultRanges = { 100, 150, 400 };
+        final double[] defaultRanges = { 100.0, 150.0, 400.0 };
         double range = plugin.getConfig().getDouble("earTrumpet."+level+".rangeIncrease", defaultRanges[level - 1]);
 
         return range;
@@ -357,7 +357,7 @@ public class RealisticChat extends JavaPlugin {
         // TODO: copy default config!
 
 
-        if (getConfig().getBoolean("earTrumpetEnable", true)) {
+        if (getConfig().getBoolean("earTrumpetEnable", true) && getConfig().getBoolean("earTrumpetEnableCrafting", true)) {
             loadRecipes();
         }
 
