@@ -137,9 +137,9 @@ class RealisticChatListener implements Listener {
 
                 recvInfo.add("clarity="+clarity);
 
-                deliverMessage(recipient, sender, megaphoneDirection(recipient, sender) + breakUpMessage(message, clarity), recvInfo);
+                deliverMessage(recipient, sender, breakUpMessage(message, clarity), recvInfo);
             } else {
-                deliverMessage(recipient, sender, megaphoneDirection(recipient, sender) + message, recvInfo);
+                deliverMessage(recipient, sender, message, recvInfo);
             }
         }
 
@@ -150,6 +150,10 @@ class RealisticChatListener implements Listener {
     /** Get whether the player has a walkie-talkie ready to talk into.
     */
     private boolean hasWalkieTalking(Player player) {
+        if (!plugin.getConfig().getBoolean("walkieEnable", true)) {
+            return false;
+        }
+
         ItemStack held = player.getItemInHand();
         
         return held != null && held.getType() == Material.COMPASS; // TODO: configurable
@@ -158,6 +162,10 @@ class RealisticChatListener implements Listener {
     /** Get whether the player has a walkie-talkie ready for listening.
     */
     private boolean hasWalkieListening(Player player) {
+        if (!plugin.getConfig().getBoolean("walkieEnable", true)) {
+            return false;
+        }
+
         ItemStack[] contents = player.getInventory().getContents();
 
         final int HOTBAR_SIZE = 9;
@@ -176,6 +184,10 @@ class RealisticChatListener implements Listener {
     /** Get whether the player has a megaphone to talk into.
     */
     private boolean hasMegaphone(Player player) {
+        if (!plugin.getConfig().getBoolean("megaphoneEnable", true)) {
+            return false;
+        }
+
         ItemStack held = player.getItemInHand();
 
         return held != null && held.getType() == Material.DIAMOND; // TODO: configurable
@@ -250,27 +262,38 @@ class RealisticChatListener implements Listener {
     private void deliverMessage(Player recipient, Player sender, String message, ArrayList<String> info) {
         ChatColor senderColor = (sender.equals(recipient) ? ChatColor.YELLOW : ChatColor.GREEN);
         ChatColor messageColor = ChatColor.WHITE;
+        String prefix = "";
 
-        recipient.sendMessage(senderColor + sender.getDisplayName() + ": " + messageColor + message);
+        if (hasMegaphone(sender)) {
+            prefix = megaphoneDirection(recipient, sender);
+        }
+
+        recipient.sendMessage(senderColor + sender.getDisplayName() + ": " + prefix + messageColor + message);
         plugin.log.info("[RealisticChat] ("+joinList(info)+") "+sender.getName() + " -> " + recipient.getName() + ": " + message);
     }
-    
+   
+    /** Get the direction a megaphone-amplified message came from, if possible.
+    */
     private String megaphoneDirection(Player recipient, Player sender){
-    	String addition = "";
-    	double recX = recipient.getLocation().getX();
-    	double recZ = recipient.getLocation().getZ();
-    	double senX = sender.getLocation().getX();
-    	double senZ = sender.getLocation().getZ();
-    	if (hasMegaphone(sender)) {
-    		if (recZ > senZ)
-    			addition = addition + "[North";
-    		if (recZ < senZ)
-    			addition = addition + "[South";
-    		if (recX > senX)
-    			addition = addition + "West]";
-    		if (recX < senX)
-    			addition = addition + "East]";
-    	}
+        if (!plugin.getConfig().getBoolean("megaphoneEnable", true) || !hasMegaphone(sender)) {
+            return "";
+        }
+
+        String addition = "";
+        double recX = recipient.getLocation().getX();
+        double recZ = recipient.getLocation().getZ();
+        double senX = sender.getLocation().getX();
+        double senZ = sender.getLocation().getZ();
+
+        if (recZ > senZ)
+            addition = addition + "[North";
+        if (recZ < senZ)
+            addition = addition + "[South";
+        if (recX > senX)
+            addition = addition + "West]";
+        if (recX < senX)
+            addition = addition + "East]";
+
     	return addition;
     }
 }

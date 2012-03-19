@@ -10,6 +10,8 @@ yell.2.rangeIncrease: 50.0
 yell.3.rangeIncrease: 100.0
 yell.4.rangeIncrease: 500.0
 whisperRangeDecrease: 40.0
+megaphoneEnable: true
 megaphoneFactor: 2.0
+walkieEnable: true
 walkieRange: 1000.0
 

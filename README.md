@@ -26,7 +26,7 @@ can decrease your chat range by **whispering**, for example: "*(lets go)*". Only
 
 To further increase your chat range, speak while holding a megaphone (diamond). This will double your
 chat range, and can be used in conjunction with yelling. Players hearing messages from megaphones
-will recognize the direction it is coming from.
+will recognize the direction it is coming from -- you can use this ability for [acoustic location](http://en.wikipedia.org/wiki/Acoustic_location).
 
 For long-range communication, use a **walkie talkie** (compass). Hold the compass in your *hand*
 and speak as normal, and your voice will be transmitted through the device up to 1000 meters
@@ -57,7 +57,11 @@ each yelling level.
 For example, 40.0 will decrease the normal 50.0 range to 10.0 meters maximum. The garble range divisor still
 applies, so (by default) only those 10.0/2 = 5.0 meters away will hear you clearly.
 
+**megaphoneEnable** (true): Enable or disable megaphones. 
+
 **megaphoneFactor** (2.0): Multiply chat range by this value when player is holding a megaphone (diamond).
+
+**walkieEnable** (true): Enable or disable walkie talkies.
 
 **walkieRange** (1000.0): The range of walkie talkies.
 
