@@ -13,6 +13,8 @@ import org.bukkit.entity.*;
 import org.bukkit.event.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.enchantments.*;
 import org.bukkit.*;
 
 class RealisticChatListener implements Listener {
@@ -76,8 +78,7 @@ class RealisticChatListener implements Listener {
         }
 
         // Log that the player tried to talk
-        double clearRangeMeters = hearingRangeMeters / garbleRangeDivisor;
-        sendInfo.add("r="+hearingRangeMeters+"/"+clearRangeMeters);
+        sendInfo.add("r="+hearingRangeMeters);
         plugin.log.info("<" + sender.getName() + ": "+joinList(sendInfo)+"> "+message);
 
         // Send to recipients
@@ -121,22 +122,31 @@ class RealisticChatListener implements Listener {
                 }
             }
 
-            // TODO: earphones? to receive further
-            // better yet: http://en.wikipedia.org/wiki/Ear_trumpet - 1600s precursor to modern electric hearing aid
+            double maxRange = hearingRangeMeters;
+
+            // Ear trumpets increase hearing range only
+            double earTrumpetRange = getEarTrumpetRange(recipient);
+            if (earTrumpetRange != 0) {
+                recvInfo.add("ear="+earTrumpetRange);
+                maxRange += earTrumpetRange;
+            }
 
             // Limit distance
-            if (distance > hearingRangeMeters) {
+            if (distance > maxRange) {
                 continue;
             }
 
-            if (distance > clearRangeMeters) {
+            double clearRange = maxRange / garbleRangeDivisor;
+
+            if (distance > clearRange) {
                 // At distances hearingRangeMeters..garbleRangeMeters (50..25), break up
                 // with increasing probability the further away they are.
                 // 24 = perfectly clear
                 // 25 = slightly garbled
                 // (distance-25)/50
                 // 50 = half clear
-                double noise = (distance - clearRangeMeters) / hearingRangeMeters;
+                // TODO: different easing function than linear?
+                double noise = (distance - clearRange) / maxRange;
                 double clarity = 1 - noise;
 
                 recvInfo.add("clarity="+clarity);
@@ -195,6 +205,45 @@ class RealisticChatListener implements Listener {
         ItemStack held = player.getItemInHand();
 
         return held != null && held.getType() == Material.DIAMOND; // TODO: configurable
+    }
+
+    /** Get the range increase of the ear trumpet the player is wearing, or 0 if none.
+     Inspired by http://en.wikipedia.org/wiki/Ear_trumpet - 1600s precursor to modern electric hearing aid
+    */
+    private double getEarTrumpetRange(Player player) {
+        ItemStack ear = getEarTrumpet(player);
+
+        if (ear == null) {
+            return 0;
+        }
+
+        int level = ear.getEnchantmentLevel(EFFICIENCY);
+        if (level > 3) {
+            level = 3;
+        }
+
+        final double[] defaultRanges = { 100, 150, 400 };
+        double range = plugin.getConfig().getDouble("earTrumpet."+level+".rangeIncrease", defaultRanges[level - 1]);
+
+        return range;
+    }
+
+    final private static Enchantment EFFICIENCY = Enchantment.DIG_SPEED;
+
+    /** Get the ear trumpet item the player is wearing, or null.
+    */
+    private ItemStack getEarTrumpet(Player player) {
+        if (!plugin.getConfig().getBoolean("earTrumpetEnable", true)) {
+            return null;
+        }
+
+        ItemStack helmet = player.getInventory().getHelmet();
+
+        if (helmet != null && helmet.getType() == Material.GOLD_HELMET && helmet.containsEnchantment(EFFICIENCY)) {
+            return helmet;
+        } else {
+            return null;
+        }
     }
 
 
@@ -306,11 +355,58 @@ public class RealisticChat extends JavaPlugin {
     Logger log = Logger.getLogger("Minecraft");
     RealisticChatListener listener;
 
-
     public void onEnable() {
+        // TODO: copy default config!
+
+
+        if (getConfig().getBoolean("earTrumpetEnable", true)) {
+            loadRecipes();
+        }
+
         listener = new RealisticChatListener(this);
     }
 
     public void onDisable() {
+        // TODO: new recipe API to remove..but won't work in 1.1-R4 so I can't use it on ExpHC yet :(
+    }
+
+    final private static Enchantment EFFICIENCY = Enchantment.DIG_SPEED;
+
+    private void loadRecipes() {
+        ItemStack earTrumpetWoodItem = new ItemStack(Material.GOLD_HELMET, 1);
+        ItemStack earTrumpetLeatherItem = new ItemStack(Material.GOLD_HELMET, 1);
+        ItemStack earTrumpetIronItem = new ItemStack(Material.GOLD_HELMET, 1);
+
+        // TODO: add workaround BUKKIT-602 for 1.1-R4 
+        // see https://github.com/mushroomhostage/SilkSpawners/commit/0763f29f217662c97a0b4a155649e14e8beb92c9
+        // https://bukkit.atlassian.net/browse/BUKKIT-602 Enchantments lost on crafting recipe output
+        earTrumpetWoodItem.addUnsafeEnchantment(EFFICIENCY, 1);
+        earTrumpetLeatherItem.addUnsafeEnchantment(EFFICIENCY, 2);
+        earTrumpetIronItem.addUnsafeEnchantment(EFFICIENCY, 3);
+
+        ShapedRecipe earTrumpetWood = new ShapedRecipe(earTrumpetWoodItem);
+        ShapedRecipe earTrumpetLeather = new ShapedRecipe(earTrumpetLeatherItem);
+        ShapedRecipe earTrumpetIron = new ShapedRecipe(earTrumpetIronItem);
+
+         earTrumpetWood.shape(
+            "WWW",
+            "WDW");
+        earTrumpetWood.setIngredient('W', Material.WOOD);   // planks
+        earTrumpetWood.setIngredient('D', Material.DIAMOND);
+        Bukkit.addRecipe(earTrumpetWood);
+
+        earTrumpetLeather.shape(
+            "LLL",
+            "LDL");
+        earTrumpetLeather.setIngredient('L', Material.LEATHER);
+        earTrumpetLeather.setIngredient('D', Material.DIAMOND);
+        Bukkit.addRecipe(earTrumpetLeather);
+
+        earTrumpetIron.shape(
+            "III",
+            "IDI");
+        earTrumpetIron.setIngredient('I', Material.IRON_INGOT);
+        earTrumpetIron.setIngredient('D', Material.DIAMOND);
+        Bukkit.addRecipe(earTrumpetIron);
     }
 }
