@@ -1,4 +1,4 @@
-hearingRangeMeters: 50.0
+speakingRangeMeters: 50.0
 garbleRangeDivisor: 2.0
 yellMax: 4
 yell.1.hunger: 1

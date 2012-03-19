@@ -39,9 +39,10 @@ All distances are configurable to your liking; see below.
 None
 
 ## Configuration
-**hearingRangeMeters** (50.0): Maximum distance between players to allow any chat message to be received.
+**speakingRangeMeters** (50.0): Maximum distance between players to allow any chat message to be received,
+under normal conditions. Note that the message may be garbled at longer distances, see below.
 
-**garbleRangeDivisor** (2.0): Fraction of hearingRangeDistance after which the chat is garbled 
+**garbleRangeDivisor** (2.0): Fraction of speakingRangeDistance after which the chat is garbled 
 (letters randomly dropped with increasing probability further away). For example, 2.0 means beyond 1/2.0 = 
 half of the maximum hearing range (default 50/2 = 25 m), chat will be garbled.
 

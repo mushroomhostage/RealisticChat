@@ -37,7 +37,7 @@ class RealisticChatListener implements Listener {
         // TODO: change to sound pressure level instead of distance based
         // see http://en.wikipedia.org/wiki/Sound_pressure#Examples_of_sound_pressure_and_sound_pressure_levels
         // for added realism, also to allow 130 dB = threshold of pain (player damage), nausea, http://en.wikipedia.org/wiki/Sound_cannon
-        double hearingRangeMeters = plugin.getConfig().getDouble("hearingRangeMeters", 50.0);
+        double speakingRange = plugin.getConfig().getDouble("speakingRangeMeters", 50.0);
         double garbleRangeDivisor = plugin.getConfig().getDouble("garbleRangeDivisor", 2.0); // so last 1/2.0 (half) of distance, speech is unclear
 
         // Yelling costs hunger and increases range
@@ -54,7 +54,7 @@ class RealisticChatListener implements Listener {
             // TODO: check food level first, and clamp yell if insufficient (or take away health hearts too?)
             sender.setFoodLevel(sender.getFoodLevel() - hunger);
 
-            hearingRangeMeters += plugin.getConfig().getDouble("yell."+yell+".rangeIncrease", defaultRangeIncrease[yell - 1]);
+            speakingRange += plugin.getConfig().getDouble("yell."+yell+".rangeIncrease", defaultRangeIncrease[yell - 1]);
         }
 
         // Whispering decreases range
@@ -62,9 +62,9 @@ class RealisticChatListener implements Listener {
         if (whisper > 0) {
             sendInfo.add("whisper="+whisper);
 
-            hearingRangeMeters -= plugin.getConfig().getDouble("whisperRangeDecrease", 40.0) * whisper;
-            if (hearingRangeMeters < 1) {
-                hearingRangeMeters = 1;
+            speakingRange -= plugin.getConfig().getDouble("whisperRangeDecrease", 40.0) * whisper;
+            if (speakingRange < 1) {
+                speakingRange = 1;
             }
         }
 
@@ -72,13 +72,13 @@ class RealisticChatListener implements Listener {
         if (hasMegaphone(sender)) {
             sendInfo.add("mega");
             double factor = plugin.getConfig().getDouble("megaphoneFactor", 2.0);  // TODO: hold more, increase more? but need a cap, base and max
-            hearingRangeMeters *= factor;
+            speakingRange *= factor;
             // TODO: should only increase in a conical volume in front of the player! Like a real megaphone
             // http://en.wikipedia.org/wiki/Megaphone
         }
 
         // Log that the player tried to talk
-        sendInfo.add("r="+hearingRangeMeters);
+        sendInfo.add("r="+speakingRange);
         plugin.log.info("<" + sender.getName() + ": "+joinList(sendInfo)+"> "+message);
 
         // Send to recipients
@@ -118,31 +118,32 @@ class RealisticChatListener implements Listener {
                 }
             }
 
-            double maxRange = hearingRangeMeters;
+            double hearingRange = speakingRange;
 
             // Ear trumpets increase hearing range only
             double earTrumpetRange = getEarTrumpetRange(recipient);
             if (earTrumpetRange != 0) {
                 recvInfo.add("ear="+earTrumpetRange);
-                maxRange += earTrumpetRange;
+                hearingRange += earTrumpetRange;
             }
+            recvInfo.add("hr="+hearingRange);
 
             // Limit distance
-            if (distance > maxRange) {
+            if (distance > hearingRange) {
                 continue;
             }
 
-            double clearRange = maxRange / garbleRangeDivisor;
+            double clearRange = hearingRange / garbleRangeDivisor;
 
             if (distance > clearRange) {
-                // At distances hearingRangeMeters..garbleRangeMeters (50..25), break up
+                // At distances speakingRangeMeters..garbleRangeMeters (50..25), break up
                 // with increasing probability the further away they are.
                 // 24 = perfectly clear
                 // 25 = slightly garbled
                 // (distance-25)/50
                 // 50 = half clear
                 // TODO: different easing function than linear?
-                double noise = (distance - clearRange) / maxRange;
+                double noise = (distance - clearRange) / hearingRange;
                 double clarity = 1 - noise;
 
                 recvInfo.add("clarity="+clarity);
@@ -309,6 +310,7 @@ class RealisticChatListener implements Listener {
     }
 
     private void deliverMessage(Player recipient, Player sender, String message, ArrayList<String> info) {
+        // TODO: all configurable
         ChatColor senderColor = (sender.equals(recipient) ? ChatColor.YELLOW : ChatColor.GREEN);
         ChatColor messageColor = ChatColor.WHITE;
         String prefix = "";
