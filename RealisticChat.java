@@ -33,7 +33,7 @@ class RealisticChatListener implements Listener {
         ArrayList<String> sendInfo = new ArrayList<String>();
 
         double hearingRangeMeters = plugin.getConfig().getDouble("hearingRangeMeters", 50.0);
-        double scrambleRangeDivisor = plugin.getConfig().getDouble("scrambleRangeDivisor", 2.0); // so last 1/2.0 (half) of distance, speech is unclear
+        double garbleRangeDivisor = plugin.getConfig().getDouble("garbleRangeDivisor", 2.0); // so last 1/2.0 (half) of distance, speech is unclear
 
         // Yelling costs hunger and increases range
         int yell = countExclamationMarks(message);
@@ -73,7 +73,7 @@ class RealisticChatListener implements Listener {
         }
 
         // Log that the player tried to talk
-        double clearRangeMeters = hearingRangeMeters / scrambleRangeDivisor;
+        double clearRangeMeters = hearingRangeMeters / garbleRangeDivisor;
         sendInfo.add("r="+hearingRangeMeters+"/"+clearRangeMeters);
         plugin.log.info("<" + sender.getName() + ": "+joinList(sendInfo)+"> "+message);
 
@@ -85,7 +85,7 @@ class RealisticChatListener implements Listener {
 
             if (sender.equals(recipient)) {
                 // Talking to ourselves
-                // TODO: still scramble? if talking through something
+                // TODO: still garble? if talking through something
                 deliverMessage(recipient, sender, message, recvInfo);
                 continue;
             }
@@ -123,7 +123,7 @@ class RealisticChatListener implements Listener {
             }
 
             if (distance > clearRangeMeters) {
-                // At distances hearingRangeMeters..scrambleRangeMeters (50..25), break up
+                // At distances hearingRangeMeters..garbleRangeMeters (50..25), break up
                 // with increasing probability the further away they are.
                 // 24 = perfectly clear
                 // 25 = slightly garbled

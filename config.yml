@@ -1,5 +1,5 @@
 hearingRangeMeters: 50.0
-scrambleRangeDivisor: 2.0
+garbleRangeDivisor: 2.0
 yellMax: 4
 yell.1.hunger: 1
 yell.2.hunger: 2

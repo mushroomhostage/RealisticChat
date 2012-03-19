@@ -1,4 +1,4 @@
-RealisticChat - local chat with added realism!
+RealisticChat - realistic local chat!
 
 Features:
 * Local chat 
@@ -9,16 +9,15 @@ Features:
 
 ## Usage
 
-
 ## Commands and Permissions
 None
 
 ## Configuration
-hearingRangeMeters: 
+hearingRangeMeters: maximum distance between players to allow any chat message to be received
 
-scrambleRangeDivisor: 2.0
+garbleRangeDivisor: 
 
-yellMax: 4
+yellMax: 
 
 yell.#.hunger: 
 yell.#.rangeIncrease:
