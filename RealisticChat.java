@@ -13,6 +13,7 @@ import org.bukkit.entity.*;
 import org.bukkit.event.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.enchantments.*;
 import org.bukkit.*;
 
 class RealisticChatListener implements Listener {
@@ -193,6 +194,39 @@ class RealisticChatListener implements Listener {
         return held != null && held.getType() == Material.DIAMOND; // TODO: configurable
     }
 
+    final private static Enchantment EFFICIENCY = Enchantment.DIG_SPEED;
+
+    /** Get whether the player is wearing an ear trumpet.
+    */
+    private ItemStack getEarTrumpet(Player player) {
+        ItemStack helmet = player.getInventory().getHelmet();
+
+        if (helmet != null && helmet.getType() == Material.GOLD_HELMET && helmet.containsEnchantment(EFFICIENCY)) {
+            return helmet;
+        } else {
+            return null;
+        }
+    }
+
+    /** Get the range increase of the ear trumpet the player is wearing, or 0 if none.
+    */
+    private double getEarTrumpetRange(Player player) {
+        ItemStack ear = getEarTrumpet(player);
+
+        if (ear == null) {
+            return 0;
+        }
+
+        int level = ear.getEnchantmentLevel(EFFICIENCY);
+        if (level > 3) {
+            level = 3;
+        }
+
+        final double[] defaultRanges = { 100, 150, 400 };
+        double range = plugin.getConfig().getDouble("earTrumpet."+level+".rangeIncrease", defaultRanges[level - 1]);
+
+        return range;
+    }
 
     private String joinList(ArrayList<String> list) {
         StringBuilder sb = new StringBuilder();
