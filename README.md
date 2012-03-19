@@ -1,11 +1,12 @@
-RealisticChat - realistic local chat!
+CakeMushroom's RealisticChat - realistic local chat!
+
+*a collaboration of cakenggt and mushroomhostage*
 
 Features:
 
 * Local chat 
-* Shouting 
+* Yelling
 * Whispering
-* Megaphones
 * Walkie-talkies
 
 ## Usage
@@ -18,9 +19,9 @@ To reach someone further away, you can **yell**. For example: "*help!*". Multipl
 marks will make you yell louder: "*help!!!!*". Yelling will also make garbled messages clearer.
 However, yelling comes at the cost of decreasing your hunger level!
 
-If you want to talk to people nearby but hide your chat from other players, you
-can decrease your chat range by **whispering**, for example: "*(lets go)*". Other players within
-the smaller range will be able to hear your whispering (whispering into the ear of an individual player is not yet supported). 
+If you want to talk to people very close by but hide your chat from others further away, you
+can decrease your chat range by **whispering**, for example: "*(lets go)*". Only players within
+the smaller range will be able to hear your whispering.
 
 For long-range communication, use a **walkie talkie** (compass). Hold the compass in your *hand*
 and speak as normal, and your voice will be transmitted through the device up to 1000 meters
@@ -46,8 +47,6 @@ half of the maximum hearing range (default 50/2 = 25 m), chat will be garbled.
 each yelling level.
 
 **whisperRangeDecrease** (10): Distance to decrease the chat range when whispering (parenthesized chat).
-
-**megaphoneFactor** (2.0): Range to multiply chat range when a megaphone (diamond) is held. Set to 1.0 to disable.
 
 **walkieRange** (1000.0): The range of walkie talkies 
 
