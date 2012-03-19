@@ -254,7 +254,8 @@ class RealisticChatListener implements Listener {
     	double recZ = recipient.getLocation().getZ();
     	double senX = sender.getLocation().getX();
     	double senZ = sender.getLocation().getZ();
-    	if (senderHeld.getType() == Material.DIAMOND){
+        ItemStack senderHeld = sender.getItemInHand();
+    	if (senderHeld != null && senderHeld.getType() == Material.DIAMOND){
     		if (recZ > senZ)
     			addition = addition + "[North";
     		if (recZ < senZ)
