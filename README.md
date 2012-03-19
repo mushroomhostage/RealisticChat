@@ -38,7 +38,8 @@ Craft it in the shape of a helmet with a diamond in the center, out of wooden pl
 then wear it on your head as armor for improved hearing. It has the same durability as a Golden Helmet.
 
 For long-range communication, use a **walkie talkie** (compass). Hold the compass in your *hand*
-and speak as normal, and your voice will be transmitted through the device up to 1000 meters
+and speak as normal, and your voice will be clearly transmitted through the device up to 1000 meters
+(and break up beyond 1000 meters, up to 2000 meters)
 to other players holding a compass anywhere in their *hotbar*. Walkie Talkies are especially
 useful for keeping in touch with other players while travelling.
 
@@ -80,6 +81,11 @@ The wearer will be able to hear (but not speak) up to this increased range.
 
 **walkieEnable** (true): Enable or disable walkie talkies.
 
-**walkieRange** (1000.0): The range of walkie talkies.
+**walkieRangeMeters** (2000.0): The maximum range of walkie talkies. Note that near the end of this range,
+messages will be garbled depending on walkieGarbleDivisor.
+
+**walkieGarbleDivisor** (2.0): Fraction of walkieRangeMeters after which the transmissiosn are garbled.
+Using the defaults, beyond 2000.0/2 = 1000 m the messages will break up, and from 0 - 1000 m, messages 
+will be clear.
 
 

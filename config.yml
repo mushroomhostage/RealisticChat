@@ -18,5 +18,5 @@ earTrumpet.1.rangeIncrease: 100.0
 earTrumpet.2.rangeIncrease: 150.0
 earTrumpet.3.rangeIncrease: 400.0
 walkieEnable: true
-walkieRange: 1000.0
-
+walkieRangeMeters: 2000.0
+walkieGarbleDivisor: 2.0
