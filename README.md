@@ -11,7 +11,7 @@ Features:
 * Ear trumpets
 * Walkie-talkies
 
-## Usage
+## Basic Usage
 Talk normally. You'll only be able to clearly hear other players within 25 meters.
 
 Beyond 25 up to 50 meters, chat will break up: letters will randomly drop from your
@@ -19,11 +19,13 @@ messages, with increasing probability the greater the distance.
 
 To reach someone further away, you can **yell**. For example: "*help!*" adds 10 m. Multiple exclamation
 marks will make you yell louder: "*help!!!!*" adds 500 m. Yelling will also make garbled messages clearer.
-However, yelling comes at the cost of decreasing your hunger level!
+However, yelling comes at the cost of decreasing your food level!
 
 If you want to talk to people very close by but hide your chat from others further away, you
 can decrease your chat range by **whispering**, for example: "*(lets go)*". Only players within
 10 m will be able to hear your whispering, and only those within 5 m will be able to hear you clearly.
+
+## Advanced Usage
 
 To further increase your chat range, speak while holding a **megaphone** (diamond). This will double your
 range, and can be used in conjunction with yelling. Players hearing messages from megaphones
@@ -84,8 +86,7 @@ The wearer will be able to hear (but not speak) up to this increased range.
 **walkieRangeMeters** (2000.0): The maximum range of walkie talkies. Note that near the end of this range,
 messages will be garbled depending on walkieGarbleDivisor.
 
-**walkieGarbleDivisor** (2.0): Fraction of walkieRangeMeters after which the transmissiosn are garbled.
+**walkieGarbleDivisor** (2.0): Fraction of walkieRangeMeters after which the transmissions are garbled.
 Using the defaults, beyond 2000.0/2 = 1000 m the messages will break up, and from 0 - 1000 m, messages 
 will be clear.
-
 
