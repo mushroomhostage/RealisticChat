@@ -1,2 +1,5 @@
-2012-03-18   1.0
+2012-03-20  1.0a
+    * Create a default config.yml automatically on startup
+
+2012-03-18  1.0
     * Initial release

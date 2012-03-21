@@ -69,12 +69,10 @@ class RealisticChatListener implements Listener {
         }
 
         // Megaphone
+        // TODO: remove after adding conical range below
         if (hasMegaphone(sender)) {
             sendInfo.add("mega");
-            double factor = plugin.getConfig().getDouble("megaphoneFactor", 2.0);  // TODO: hold more, increase more? but need a cap, base and max
-            //speakingRange *= factor;
-            // TODO: should only increase in a conical volume in front of the player! Like a real megaphone
-            // http://en.wikipedia.org/wiki/Megaphone
+            speakingRange *= plugin.getConfig().getDouble("megaphoneFactor", 2.0);  // TODO: hold more, increase more? but need a cap, base and max
         }
 
         // Log that the player tried to talk
@@ -140,13 +138,14 @@ class RealisticChatListener implements Listener {
             	 * is less than 35 degrees by default. This makes sure the receiving player is in the "sound cone".
             	 * If so, the megaphone multipier is applied to the hearingRange of this receiving player.
             	 */
+                 /* TODO: test this and re-enable post-1.0a
             	float actSlop = (recipient.getZ() - sender.getZ())/(recipient.getX() - sender.getX());
             	float micSlop = Math.tan(((sender.getLocation().getYaw() - 64)/64) * 0.5 * 3.14159);
             	//the 35 in 35/360 represents half of the degree width of the megaphone cone. This should be configurable.
             	//the current degree width of the megaphone cone with the default value of 35 is 70 degrees, which is the default minecraft FOV.
             	if (Math.abs(micSlop - actSlop) < (35/360)){
-            		hearingRange *= factor;
-            	}
+            		hearingRange *= plugin.getConfig().getDouble("megaphoneFactor", 2.0);
+            	}*/
             }
 
             // Ear trumpets increase hearing range only
@@ -320,7 +319,7 @@ class RealisticChatListener implements Listener {
         StringBuilder newMessage = new StringBuilder();
 
         // This string character iteration method is cumbersome, but it is
-   )     // the most correct, especially if players are using plane 1 characters
+        // the most correct, especially if players are using plane 1 characters
         // see http://mindprod.com/jgloss/codepoint.html
         int i = 0;
         while (i < message.length()) {
@@ -383,8 +382,10 @@ public class RealisticChat extends JavaPlugin {
     RealisticChatListener listener;
 
     public void onEnable() {
-        // TODO: copy default config!
-
+        // Copy default config
+        getConfig().options().copyDefaults(true);
+        saveConfig();
+        reloadConfig();
 
         if (getConfig().getBoolean("earTrumpetEnable", true) && getConfig().getBoolean("earTrumpetEnableCrafting", true)) {
             loadRecipes();
