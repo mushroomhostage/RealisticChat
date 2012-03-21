@@ -86,6 +86,8 @@ The wearer will be able to hear (but not speak) up to this increased range.
 
 **walkieEnable** (true): Enable or disable walkie talkies.
 
+**walkieItem** (compass): The hand-held item to use to represent walkie talkies.
+
 **walkieRangeMeters** (2000.0): The maximum range of walkie talkies. Note that near the end of this range,
 messages will be garbled depending on walkieGarbleDivisor.
 

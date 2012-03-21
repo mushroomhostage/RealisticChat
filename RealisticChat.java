@@ -192,7 +192,7 @@ class RealisticChatListener implements Listener {
 
         ItemStack held = player.getItemInHand();
         
-        return held != null && held.getType() == Material.COMPASS; // TODO: configurable
+        return held != null && held.getTypeId() == plugin.walkieItemId;
     }
 
     /** Get whether the player has a walkie-talkie ready for listening.
@@ -209,7 +209,7 @@ class RealisticChatListener implements Listener {
         for (int i = 0; i < HOTBAR_SIZE; i += 1) {
             ItemStack item = contents[i];
 
-            if (item != null && item.getType() == Material.COMPASS) {
+            if (item != null && item.getTypeId() == plugin.walkieItemId) {
                 return true;
             }
         }
@@ -378,11 +378,15 @@ public class RealisticChat extends JavaPlugin {
     Logger log = Logger.getLogger("Minecraft");
     RealisticChatListener listener;
 
+    int walkieItemId;
+
     public void onEnable() {
         // Copy default config
         getConfig().options().copyDefaults(true);
         saveConfig();
         reloadConfig();
+
+        walkieItemId = getConfigItemId("walkieItem", Material.COMPASS.getId());
 
         if (getConfig().getBoolean("earTrumpetEnable", true) && getConfig().getBoolean("earTrumpetEnableCrafting", true)) {
             loadRecipes();
@@ -390,6 +394,27 @@ public class RealisticChat extends JavaPlugin {
 
         listener = new RealisticChatListener(this);
     }
+
+    /** Get an item id from a configuration setting (name or numeric id) 
+    */
+    private int getConfigItemId(String name, int defaultId) {
+        String s = getConfig().getString(name);
+        if (s == null) {
+            return defaultId;
+        }
+
+        Material material = Material.matchMaterial(s);
+        if (material != null) {
+            return material.getId();
+        }
+        try {
+            return Integer.parseInt(s, 10);
+        } catch (NumberFormatException e) {
+            log.warning("Bad item id: " + s + ", using default: " + defaultId);
+            return defaultId;
+        }
+    }
+
 
     public void onDisable() {
         // TODO: new recipe API to remove..but won't work in 1.1-R4 so I can't use it on ExpHC yet :(
