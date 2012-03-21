@@ -72,6 +72,8 @@ applies, so (by default) only those 10.0/2 = 5.0 meters away will hear you clear
 
 **megaphoneEnable** (true): Enable or disable megaphones. 
 
+**megaphoneItem** (diamond): The hand-held item to use to represent megaphones.
+
 **megaphoneFactor** (2.0): Multiply chat range by this value when player is holding a megaphone (diamond).
 
 **megaphoneWidthDegrees** (70.0): Width of the megaphone conical region in front of the player, in degrees.

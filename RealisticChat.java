@@ -234,7 +234,7 @@ class RealisticChatListener implements Listener {
 
         ItemStack held = player.getItemInHand();
 
-        return held != null && held.getType() == Material.DIAMOND; // TODO: configurable
+        return held != null && held.getTypeId() == plugin.megaphoneItemId;
     }
 
     /** Get the range increase of the ear trumpet the player is wearing, or 0 if none.
@@ -387,6 +387,7 @@ public class RealisticChat extends JavaPlugin {
     RealisticChatListener listener;
 
     int walkieItemId;
+    int megaphoneItemId;
 
     public void onEnable() {
         // Copy default config
@@ -395,6 +396,7 @@ public class RealisticChat extends JavaPlugin {
         reloadConfig();
 
         walkieItemId = getConfigItemId("walkieItem", Material.COMPASS.getId());
+        megaphoneItemId = getConfigItemId("megaphoneItem", Material.DIAMOND.getId());
 
         if (getConfig().getBoolean("earTrumpetEnable", true) && getConfig().getBoolean("earTrumpetEnableCrafting", true)) {
             loadRecipes();

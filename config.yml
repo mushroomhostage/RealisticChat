@@ -11,6 +11,7 @@ yell.3.rangeIncrease: 100.0
 yell.4.rangeIncrease: 500.0
 whisperRangeDecrease: 40.0
 megaphoneEnable: true
+megaphoneItem: diamond
 megaphoneFactor: 2.0
 megaphoneWidthDegrees: 70.0
 earTrumpetEnable: true
