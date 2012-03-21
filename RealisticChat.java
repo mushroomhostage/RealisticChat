@@ -69,10 +69,9 @@ class RealisticChatListener implements Listener {
         }
 
         // Megaphone
-        // TODO: remove after adding conical range below
         if (hasMegaphone(sender)) {
             sendInfo.add("mega");
-            speakingRange *= plugin.getConfig().getDouble("megaphoneFactor", 2.0);  // TODO: hold more, increase more? but need a cap, base and max
+            // calculated in recipient
         }
 
         // Log that the player tried to talk
@@ -128,7 +127,7 @@ class RealisticChatListener implements Listener {
 
             double hearingRange = speakingRange;
             
-            if (hasMegaphone(sender)){
+            if (hasMegaphone(sender)) {
             	/*
             	 * actSlop stands for actual slope and is the slope m in the equation Z = mX of the line drawn
             	 * from the sender to the recipient. micSlop stands for microphone slope and is the slope
@@ -138,14 +137,12 @@ class RealisticChatListener implements Listener {
             	 * is less than 35 degrees by default. This makes sure the receiving player is in the "sound cone".
             	 * If so, the megaphone multipier is applied to the hearingRange of this receiving player.
             	 */
-                 /* TODO: test this and re-enable post-1.0a
-            	float actSlop = (recipient.getZ() - sender.getZ())/(recipient.getX() - sender.getX());
-            	float micSlop = Math.tan(((sender.getLocation().getYaw() - 64)/64) * 0.5 * 3.14159);
-            	//the 35 in 35/360 represents half of the degree width of the megaphone cone. This should be configurable.
-            	//the current degree width of the megaphone cone with the default value of 35 is 70 degrees, which is the default minecraft FOV.
-            	if (Math.abs(micSlop - actSlop) < (35/360)){
+            	double actSlop = (recipient.getLocation().getZ() - sender.getLocation().getZ())/(recipient.getLocation().getX() - sender.getLocation().getX());
+            	double micSlop = Math.tan(((sender.getLocation().getYaw() - 64)/64) * 0.5 * 3.14159);
+                // 70 degrees is the default Minecraft FOV; divide it in half to get 35 degree width on each side.
+            	if (Math.abs(micSlop - actSlop) < (plugin.getConfig().getDouble("megaphoneWidthDegrees", 70.0)/2/360)){
             		hearingRange *= plugin.getConfig().getDouble("megaphoneFactor", 2.0);
-            	}*/
+            	}
             }
 
             // Ear trumpets increase hearing range only

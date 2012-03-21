@@ -74,6 +74,9 @@ applies, so (by default) only those 10.0/2 = 5.0 meters away will hear you clear
 
 **megaphoneFactor** (2.0): Multiply chat range by this value when player is holding a megaphone (diamond).
 
+**megaphoneWidthDegrees** (70.0): Width of the megaphone conical region in front of the player, in degrees.
+70 is the default Minecraft field-of-view.
+
 **earTrumpetEnable** (true): Enable or disable ear trumpets.
 
 **earTrumpetEnableCrafting** (true): Enable or disable crafting of ear trumpets.
