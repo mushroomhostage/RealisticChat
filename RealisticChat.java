@@ -70,7 +70,7 @@ class RealisticChatListener implements Listener {
 
         // Megaphone
         if (hasMegaphone(sender)) {
-            sendInfo.add("mega");
+            sendInfo.add("send-mega");
             // calculated in recipient
         }
 
@@ -139,8 +139,16 @@ class RealisticChatListener implements Listener {
             	 */
             	double actSlop = (recipient.getLocation().getZ() - sender.getLocation().getZ())/(recipient.getLocation().getX() - sender.getLocation().getX());
             	double micSlop = Math.tan(((sender.getLocation().getYaw() - 64)/64) * 0.5 * 3.14159);
+                double angleDiff = Math.abs(micSlop - actSlop);
                 // 70 degrees is the default Minecraft FOV; divide it in half to get 35 degree width on each side.
-            	if (Math.abs(micSlop - actSlop) < (plugin.getConfig().getDouble("megaphoneWidthDegrees", 70.0)/2/360)){
+                double angleExpected = plugin.getConfig().getDouble("megaphoneWidthDegrees", 70.0)/2/360;
+                recvInfo.add("mega-actSlop=" + actSlop);
+                recvInfo.add("mega-micSlop=" + micSlop);
+                recvInfo.add("mega-angleDiff=" + angleDiff);
+                recvInfo.add("mega-angleExpected=" + angleExpected);
+                // TODO: does this work? seem to be getting very low expected angles
+            	if (angleDiff < angleExpected) {
+                    recvInfo.add("heard-mega");
             		hearingRange *= plugin.getConfig().getDouble("megaphoneFactor", 2.0);
             	}
             }
