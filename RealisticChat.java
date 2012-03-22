@@ -377,6 +377,7 @@ class RealisticChatListener implements Listener {
             prefix = megaphoneDirection(recipient, sender);
         }
 
+        // TODO: use String.Format, like PlayerChatEvent setFormat() - better than string replacements
         String format = plugin.getConfig().getString("chatLineFormat", "player: message");
         String formattedMessage = format.
             replace("player", senderColor + sender.getDisplayName() + plugin.messageColor).
@@ -411,14 +412,37 @@ class RealisticChatListener implements Listener {
 
     	return addition;
     }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled=true)
+    public void onPlayerItemHeld(PlayerItemHeldEvent event) {
+        Player player = event.getPlayer();
+        int slot = event.getNewSlot();
+
+        ItemStack held = player.getInventory().getItem(slot);
+
+        if (isSmartphone(held)) {
+            // TODO: if phone is ringing, answer it! (player switched to phone to pick it up)
+            plugin.log.info("Switched to phone");
+        }
+    }
+
+    /** Get whether the item is a smart phone device.
+    */
+    // TODO: item held (for sending), and in inventory (for ringing) helper functions
+    private boolean isSmartphone(ItemStack item) {
+        if (!plugin.getConfig().getBoolean("smartphoneEnable", true)) {
+            return false;
+        }
+
+        return item != null && item.getTypeId() == plugin.smartphoneItemId;
+    }
 }
 
 public class RealisticChat extends JavaPlugin { 
     Logger log = Logger.getLogger("Minecraft");
     RealisticChatListener listener;
 
-    int walkieItemId;
-    int megaphoneItemId;
+    int walkieItemId, megaphoneItemId, smartphoneItemId;
     ChatColor spokenPlayerColor, heardPlayerColor, messageColor, dimMessageColor;
 
     public void onEnable() {
@@ -429,6 +453,7 @@ public class RealisticChat extends JavaPlugin {
 
         walkieItemId = getConfigItemId("walkieItem", Material.COMPASS.getId());
         megaphoneItemId = getConfigItemId("megaphoneItem", Material.DIAMOND.getId());
+        smartphoneItemId = getConfigItemId("smartphoneItem", Material.WATCH.getId());
 
         spokenPlayerColor = getConfigColor("chatSpokenPlayerColor", ChatColor.YELLOW);
         heardPlayerColor = getConfigColor("chatHeardPlayerColor", ChatColor.GREEN);
@@ -466,6 +491,7 @@ public class RealisticChat extends JavaPlugin {
             return defaultId;
         }
 
+        // TODO: can we use ItemStack ConfigurationSerializable? might be easier..
         Material material = Material.matchMaterial(s);
         if (material != null) {
             return material.getId();
