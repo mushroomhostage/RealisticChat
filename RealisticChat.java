@@ -120,7 +120,7 @@ class RealisticChatListener implements Listener {
 
                     recvInfoWalkie.add("wc="+walkieClarity);
 
-                	deliverMessage(recipient, sender, "[via walkie] " + breakUpMessage(message, walkieClarity), recvInfoWalkie);
+                	deliverMessage(recipient, sender, "[via walkie] " + garbleMessage(message, walkieClarity), recvInfoWalkie);
                 }
                 // also fall through and deliver message locally
             }
@@ -129,25 +129,34 @@ class RealisticChatListener implements Listener {
             
             if (hasMegaphone(sender)) {
             	/*
-            	 * actSlop stands for actual slope and is the slope m in the equation Z = mX of the line drawn
-            	 * from the sender to the recipient. micSlop stands for microphone slope and is the slope
-            	 * of the direction the sender is facing when they use a megaphone. the equation in the if
+            	 * actSlop is measured in yaw, which itself is measured in 256 degrees, instead of
+            	 * 360. actSlop is the degrees yaw of the angle from sender to rec. 
+            	 * micSlop is the yaw angle that the sender is facing. the equation in the if
             	 * statement on the left hand side of the "less than" symbol gives the difference between the 
             	 * two slopes and the right hand side of the if statement checks to make sure the difference
             	 * is less than 35 degrees by default. This makes sure the receiving player is in the "sound cone".
             	 * If so, the megaphone multipier is applied to the hearingRange of this receiving player.
             	 */
-            	double actSlop = (recipient.getLocation().getZ() - sender.getLocation().getZ())/(recipient.getLocation().getX() - sender.getLocation().getX());
-            	double micSlop = Math.tan(((sender.getLocation().getYaw() - 64)/64) * 0.5 * 3.14159);
-                double angleDiff = Math.abs(micSlop - actSlop);
-                // 70 degrees is the default Minecraft FOV; divide it in half to get 35 degree width on each side.
-                double angleExpected = plugin.getConfig().getDouble("megaphoneWidthDegrees", 70.0)/2/360;
+            	double deltaZ = recipient.getLocation().getZ() - sender.getLocation().getZ();
+            	double deltaX = recipient.getLocation().getX() - sender.getLocation().getX();
+            	double actSlop = 0;
+            	if (deltaZ <= 0 && deltaX >= 0)
+            		actSlop = Math.tan(deltaX/(-1*deltaZ))*(360/(2*3.14159));
+            	if (deltaZ >= 0 && deltaX > 0)
+            		actSlop = Math.tan(deltaZ/(deltaX))*(360/(2*3.14159))+90;
+            	if (deltaZ > 0 && deltaX <= 0)
+            		actSlop = Math.tan((-1*deltaX)/(deltaZ))*(360/(2*3.14159))+180;
+            	if (deltaZ <= 0 && deltaX < 0)
+            		actSlop = Math.tan((-1*deltaZ)/(-1*deltaX))*(360/(2*3.14159))+270;
+            	double micSlop = sender.getLocation().getYaw() * (360/256);
+
                 recvInfo.add("mega-actSlop=" + actSlop);
                 recvInfo.add("mega-micSlop=" + micSlop);
-                recvInfo.add("mega-angleDiff=" + angleDiff);
-                recvInfo.add("mega-angleExpected=" + angleExpected);
-                // TODO: does this work? seem to be getting very low expected angles
-            	if (angleDiff < angleExpected) {
+                recvInfo.add("mega-deltaZ=" + deltaZ);
+                recvInfo.add("mega-deltaX=" + deltaX);
+
+                // 70 degrees is the default Minecraft FOV; divide it in half to get 35 degree width on each side.
+            	if (Math.abs(micSlop - actSlop) < (plugin.getConfig().getDouble("megaphoneWidthDegrees", 70.0))){
                     recvInfo.add("heard-mega");
             		hearingRange *= plugin.getConfig().getDouble("megaphoneFactor", 2.0);
             	}
@@ -181,7 +190,7 @@ class RealisticChatListener implements Listener {
 
                 recvInfo.add("clarity="+clarity);
 
-                deliverMessage(recipient, sender, breakUpMessage(message, clarity), recvInfo);
+                deliverMessage(recipient, sender, garbleMessage(message, clarity), recvInfo);
             } else {
                 deliverMessage(recipient, sender, message, recvInfo);
             }
@@ -313,13 +322,13 @@ class RealisticChatListener implements Listener {
         return whisper;
     }
 
-    /** Randomly "break up" a message as if it was incompletely heard
+    /** Randomly garble a message (drop letters) as if it was incompletely heard.
       *
       * @param message The clear message
       * @param clarity Probability of getting through
       * @return The broken up message
       */
-    private String breakUpMessage(String message, double clarity) {
+    private String garbleMessage(String message, double clarity) {
         // Delete random letters
         StringBuilder newMessage = new StringBuilder();
 
@@ -327,6 +336,7 @@ class RealisticChatListener implements Listener {
         // the most correct, especially if players are using plane 1 characters
         // see http://mindprod.com/jgloss/codepoint.html
         int i = 0;
+        int drops = 0;
         while (i < message.length()) {
             int c = message.codePointAt(i);
             i += Character.charCount(c);
@@ -334,9 +344,17 @@ class RealisticChatListener implements Listener {
             if (random.nextDouble() < clarity) {
                 newMessage.appendCodePoint(c);
             } else {
-                newMessage.append(' ');
+                // can't hear you..
+                if (random.nextDouble() < plugin.getConfig().getDouble("garbleDrop", 0.90)) {
+                    newMessage.append(' ');
+                    drops += 1;
+                } else {
+                    // barely got through (dimmed)
+                    newMessage.append(ChatColor.DARK_GRAY);
+                    newMessage.appendCodePoint(c);
+                    newMessage.append(ChatColor.WHITE); // TODO: back to _default_ color, not necessarily white!
+                }
             }
-            // TODO: third case, dark gray? (barely gets through)
         }
 
         return new String(newMessage);
