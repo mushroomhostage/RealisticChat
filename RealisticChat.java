@@ -68,10 +68,24 @@ class RealisticChatListener implements Listener {
             }
         }
 
-        // Megaphone
-        if (hasMegaphone(sender)) {
+        // Speaking into certain devices
+        if (holdingMegaphone(sender)) {
             sendInfo.add("send-mega");
             // calculated in recipient
+        } else if (holdingSmartphone(sender)) {
+            sendInfo.add("send-phone");
+            // TODO: natural language processing
+            // TODO: detect commands, like voice-activated proximity-activated state-of-the-art smartphone
+            // Call player name if exists
+            Player caller = sender;
+            Player callee = Bukkit.getPlayer(message); // TODO: strip (),!, try to understand
+            if (callee == null) {
+                // TODO: ring but have no one pick up? Your call cannot be completed as dialed.
+                sender.sendMessage("No callee found: " + message);
+            } else {
+                sender.sendMessage("Ringing "+callee.getDisplayName()+"...");
+                // TODO: actually call!
+            }
         }
 
         // Log that the player tried to talk
@@ -127,7 +141,7 @@ class RealisticChatListener implements Listener {
 
             double hearingRange = speakingRange;
             
-            if (hasMegaphone(sender)) {
+            if (holdingMegaphone(sender)) {
             	/*
             	 * actSlop is measured in yaw, which itself is measured in 256 degrees, instead of
             	 * 360. actSlop is the degrees yaw of the angle from sender to rec. 
@@ -236,7 +250,7 @@ class RealisticChatListener implements Listener {
 
     /** Get whether the player has a megaphone to talk into.
     */
-    private boolean hasMegaphone(Player player) {
+    private boolean holdingMegaphone(Player player) {
         if (!plugin.getConfig().getBoolean("megaphoneEnable", true)) {
             return false;
         }
@@ -373,7 +387,7 @@ class RealisticChatListener implements Listener {
         ChatColor senderColor = (sender.equals(recipient) ? plugin.spokenPlayerColor : plugin.heardPlayerColor);
         String prefix = "";
 
-        if (hasMegaphone(sender)) {
+        if (holdingMegaphone(sender)) {
             prefix = megaphoneDirection(recipient, sender);
         }
 
@@ -391,7 +405,7 @@ class RealisticChatListener implements Listener {
     /** Get the direction a megaphone-amplified message came from, if possible.
     */
     private String megaphoneDirection(Player recipient, Player sender){
-        if (!plugin.getConfig().getBoolean("megaphoneEnable", true) || !hasMegaphone(sender)) {
+        if (!plugin.getConfig().getBoolean("megaphoneEnable", true) || !holdingMegaphone(sender)) {
             return "";
         }
 
@@ -422,13 +436,12 @@ class RealisticChatListener implements Listener {
 
         if (isSmartphone(held)) {
             // TODO: if phone is ringing, answer it! (player switched to phone to pick it up)
-            plugin.log.info("Switched to phone");
+            player.sendMessage("Switched to smartphone");
         }
     }
 
     /** Get whether the item is a smart phone device.
     */
-    // TODO: item held (for sending), and in inventory (for ringing) helper functions
     private boolean isSmartphone(ItemStack item) {
         if (!plugin.getConfig().getBoolean("smartphoneEnable", true)) {
             return false;
@@ -436,6 +449,15 @@ class RealisticChatListener implements Listener {
 
         return item != null && item.getTypeId() == plugin.smartphoneItemId;
     }
+
+    /** Get whether the player is holding their smartphone, possibly speaking into it.
+    */
+    private boolean holdingSmartphone(Player player) {
+        return isSmartphone(player.getItemInHand());
+    }
+
+    // TODO: check if in inventory
+    //private boolean hasSmartphone()
 }
 
 public class RealisticChat extends JavaPlugin { 
