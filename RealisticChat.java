@@ -347,9 +347,9 @@ class RealisticChatListener implements Listener {
                 // can't hear you..
                 if (random.nextDouble() < plugin.getConfig().getDouble("garblePartialChance", 0.10)) {
                     // barely got through (dimmed)
-                    newMessage.append(ChatColor.DARK_GRAY);
+                    newMessage.append(plugin.dimMessageColor);
                     newMessage.appendCodePoint(c);
-                    newMessage.append(ChatColor.WHITE); // TODO: back to _default_ color, not necessarily white!
+                    newMessage.append(plugin.messageColor);
                 } else {
                     newMessage.append(' ');
                     drops += 1;
@@ -370,8 +370,7 @@ class RealisticChatListener implements Listener {
 
     private void deliverMessage(Player recipient, Player sender, String message, ArrayList<String> info) {
         // TODO: all configurable
-        ChatColor senderColor = (sender.equals(recipient) ? ChatColor.YELLOW : ChatColor.GREEN);
-        ChatColor messageColor = ChatColor.WHITE;
+        ChatColor senderColor = (sender.equals(recipient) ? plugin.spokenPlayerColor : plugin.heardPlayerColor);
         String prefix = "";
 
         if (hasMegaphone(sender)) {
@@ -379,7 +378,7 @@ class RealisticChatListener implements Listener {
         }
 
         String format = plugin.getConfig().getString("chatLineFormat", "player: message");
-        String formattedMessage = format.replace("player", senderColor + sender.getDisplayName()).replace("message", prefix + messageColor + message);
+        String formattedMessage = format.replace("player", senderColor + sender.getDisplayName()).replace("message", prefix + plugin.messageColor + message);
 
         recipient.sendMessage(formattedMessage);
 
@@ -418,6 +417,7 @@ public class RealisticChat extends JavaPlugin {
 
     int walkieItemId;
     int megaphoneItemId;
+    ChatColor spokenPlayerColor, heardPlayerColor, messageColor, dimMessageColor;
 
     public void onEnable() {
         // Copy default config
@@ -428,12 +428,33 @@ public class RealisticChat extends JavaPlugin {
         walkieItemId = getConfigItemId("walkieItem", Material.COMPASS.getId());
         megaphoneItemId = getConfigItemId("megaphoneItem", Material.DIAMOND.getId());
 
+        spokenPlayerColor = getConfigColor("chatSpokenPlayerColor", ChatColor.YELLOW);
+        heardPlayerColor = getConfigColor("chatHeardPlayerColor", ChatColor.GREEN);
+        messageColor = getConfigColor("chatMessageColor", ChatColor.WHITE);
+        dimMessageColor = getConfigColor("chatDimMessageColor", ChatColor.DARK_GRAY);
+
         if (getConfig().getBoolean("earTrumpetEnable", true) && getConfig().getBoolean("earTrumpetEnableCrafting", true)) {
             loadRecipes();
         }
 
         listener = new RealisticChatListener(this);
     }
+
+    /** Get a chat color from a configuration setting.
+    */
+    private ChatColor getConfigColor(String name, ChatColor defaultColor) {
+        String s = getConfig().getString(name);
+        if (s == null) {
+            return defaultColor;
+        }
+
+        try {
+            return ChatColor.valueOf(s);
+        } catch (IllegalArgumentException e) {
+            log.warning("Bad color name: " + s + ", using default: " + defaultColor + ": " + e);
+            return defaultColor;
+        }
+    } 
 
     /** Get an item id from a configuration setting (name or numeric id) 
     */

@@ -3,6 +3,10 @@ garbleRangeDivisor: 2.0
 garblePartialChance: 0.10
 garbleAllDroppedMessage: "~~~"
 chatLineFormat: "player: message"
+chatSpokenPlayerColor: YELLOW
+chatHeardPlayerColor: GREEN
+chatMessageColor: WHITE
+chatDimMessageColor: DARK_GRAY
 yellMax: 4
 yell.1.hunger: 1
 yell.2.hunger: 2

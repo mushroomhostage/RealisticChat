@@ -59,7 +59,7 @@ under normal conditions. Note that the message may be garbled at longer distance
 half of the maximum hearing range (default 50/2 = 25 m), chat will be garbled.
 
 **garblePartialChance** (0.10): When a character is about to be dropped due to garbling, use this
-probability to determine if the character should instead be dimmed, representing a barely audible piece of
+probability to determine if the character should instead be dimmed (colored chatDimMessageColor), representing a barely audible piece of
 the message. Set to 1.0 to always dim letters instead of dropping, or 0.0 to disable dimming entirely.
 
 **garbleAllDroppedMessage** (~~~): Message replacement to display if you were unlucky enough for your
@@ -67,6 +67,15 @@ entire message to be garbled. Set to null to disable replacement.
 
 **chatLineFormat** (player: message): The format of the chat line to be shown to the player. "player"
 is replaced with the player's display name, and "message" with the message text.
+
+**chatSpokenPlayerColor** (YELLOW): Color of player name shown to a player when they themselves speak.
+
+**chatHeardPlayerColor** (GREEN): Color of player name of speech heard from other players.
+
+**chatMessageColor** (WHITE): Color of chat messages.
+
+**chatDimMessageColor** (DARK\_GRAY): Color of partially-received characters, garbled by garblePartialChance.
+Set to "MAGIC" for an interesting effect.
 
 **yellMax** (4): Maximum exclamation marks allowed at end of message to increase yelling level.
 
