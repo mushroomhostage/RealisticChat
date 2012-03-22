@@ -65,6 +65,9 @@ the message. Set to 1.0 to always dim letters instead of dropping, or 0.0 to dis
 **garbleAllDroppedMessage** (~~~): Message replacement to display if you were unlucky enough for your
 entire message to be garbled. Set to null to disable replacement.
 
+**chatLineFormat** (player: message): The format of the chat line to be shown to the player. "player"
+is replaced with the player's display name, and "message" with the message text.
+
 **yellMax** (4): Maximum exclamation marks allowed at end of message to increase yelling level.
 
 **yell.#.hunger** (1, 2, 4, 20): Hunger (in half-drumsticks) depleted for each yelling level 

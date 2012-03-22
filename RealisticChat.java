@@ -378,7 +378,11 @@ class RealisticChatListener implements Listener {
             prefix = megaphoneDirection(recipient, sender);
         }
 
-        recipient.sendMessage(senderColor + sender.getDisplayName() + ": " + prefix + messageColor + message);
+        String format = plugin.getConfig().getString("chatLineFormat", "player: message");
+        String formattedMessage = format.replace("player", senderColor + sender.getDisplayName()).replace("message", prefix + messageColor + message);
+
+        recipient.sendMessage(formattedMessage);
+
         plugin.log.info("[RealisticChat] ("+joinList(info)+") "+sender.getName() + " -> " + recipient.getName() + ": " + message);
     }
    
