@@ -129,18 +129,28 @@ class RealisticChatListener implements Listener {
             
             if (hasMegaphone(sender)) {
             	/*
-            	 * actSlop stands for actual slope and is the slope m in the equation Z = mX of the line drawn
-            	 * from the sender to the recipient. micSlop stands for microphone slope and is the slope
-            	 * of the direction the sender is facing when they use a megaphone. the equation in the if
+            	 * actSlop is measured in yaw, which itself is measured in 256 degrees, instead of
+            	 * 360. actSlop is the degrees yaw of the angle from sender to rec. 
+            	 * micSlop is the yaw angle that the sender is facing. the equation in the if
             	 * statement on the left hand side of the "less than" symbol gives the difference between the 
             	 * two slopes and the right hand side of the if statement checks to make sure the difference
             	 * is less than 35 degrees by default. This makes sure the receiving player is in the "sound cone".
             	 * If so, the megaphone multipier is applied to the hearingRange of this receiving player.
             	 */
-            	double actSlop = (recipient.getLocation().getZ() - sender.getLocation().getZ())/(recipient.getLocation().getX() - sender.getLocation().getX());
-            	double micSlop = Math.tan(((sender.getLocation().getYaw() - 64)/64) * 0.5 * 3.14159);
+            	double deltaZ = recipient.getLocation().getZ() - sender.getLocation().getZ();
+            	double deltaX = recipient.getLocation().getX() - sender.getLocation().getX();
+            	double actSlop = 0;
+            	if (deltaZ <= 0 && deltaX >= 0)
+            		actSlop = Math.tan(deltaX/(-1*deltaZ))*(360/(2*3.14159));
+            	if (deltaZ >= 0 && deltaX > 0)
+            		actSlop = Math.tan(deltaZ/(deltaX))*(360/(2*3.14159))+90;
+            	if (deltaZ > 0 && deltaX <= 0)
+            		actSlop = Math.tan((-1*deltaX)/(deltaZ))*(360/(2*3.14159))+180;
+            	if (deltaZ <= 0 && deltaX < 0)
+            		actSlop = Math.tan((-1*deltaZ)/(-1*deltaX))*(360/(2*3.14159))+270;
+            	double micSlop = sender.getLocation().getYaw() * (360/256);
                 // 70 degrees is the default Minecraft FOV; divide it in half to get 35 degree width on each side.
-            	if (Math.abs(micSlop - actSlop) < (plugin.getConfig().getDouble("megaphoneWidthDegrees", 70.0)/2/360)){
+            	if (Math.abs(micSlop - actSlop) < (plugin.getConfig().getDouble("megaphoneWidthDegrees", 70.0))){
             		hearingRange *= plugin.getConfig().getDouble("megaphoneFactor", 2.0);
             	}
             }
