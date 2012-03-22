@@ -356,6 +356,16 @@ class RealisticChatListener implements Listener {
                 }
             }
         }
+        /*
+        if (drops == message.length()) {
+            // bad luck, message was completely obscured
+            // TODO: improve conditional; might have replaced all letters but not spaces..
+            String noise = plugin.getConfig().getString("garbleAllDroppedMessage", "~~~");
+            if (noise != null) {
+                return noise;
+            }
+        }
+        */
 
         return new String(newMessage);
     }
