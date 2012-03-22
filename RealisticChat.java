@@ -378,7 +378,9 @@ class RealisticChatListener implements Listener {
         }
 
         String format = plugin.getConfig().getString("chatLineFormat", "player: message");
-        String formattedMessage = format.replace("player", senderColor + sender.getDisplayName()).replace("message", prefix + plugin.messageColor + message);
+        String formattedMessage = format.
+            replace("player", senderColor + sender.getDisplayName() + plugin.messageColor).
+            replace("message", prefix + message);
 
         recipient.sendMessage(formattedMessage);
 
