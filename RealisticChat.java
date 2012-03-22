@@ -345,27 +345,25 @@ class RealisticChatListener implements Listener {
                 newMessage.appendCodePoint(c);
             } else {
                 // can't hear you..
-                if (random.nextDouble() < plugin.getConfig().getDouble("garbleDrop", 0.90)) {
-                    newMessage.append(' ');
-                    drops += 1;
-                } else {
+                if (random.nextDouble() < plugin.getConfig().getDouble("garblePartialChance", 0.10)) {
                     // barely got through (dimmed)
                     newMessage.append(ChatColor.DARK_GRAY);
                     newMessage.appendCodePoint(c);
                     newMessage.append(ChatColor.WHITE); // TODO: back to _default_ color, not necessarily white!
+                } else {
+                    newMessage.append(' ');
+                    drops += 1;
                 }
             }
         }
-        /*
         if (drops == message.length()) {
             // bad luck, message was completely obscured
-            // TODO: improve conditional; might have replaced all letters but not spaces..
+            // TODO: improve conditional?; might have replaced all letters but not spaces..
             String noise = plugin.getConfig().getString("garbleAllDroppedMessage", "~~~");
             if (noise != null) {
                 return noise;
             }
         }
-        */
 
         return new String(newMessage);
     }

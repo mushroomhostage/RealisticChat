@@ -1,6 +1,7 @@
 speakingRangeMeters: 50.0
 garbleRangeDivisor: 2.0
-garbleDrop: 0.90    # TODO: document
+garblePartialChance: 0.10
+garbleAllDroppedMessage: "~~~"
 yellMax: 4
 yell.1.hunger: 1
 yell.2.hunger: 2

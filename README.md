@@ -58,6 +58,13 @@ under normal conditions. Note that the message may be garbled at longer distance
 (letters randomly dropped with increasing probability further away). For example, 2.0 means beyond 1/2.0 = 
 half of the maximum hearing range (default 50/2 = 25 m), chat will be garbled.
 
+**garblePartialChance** (0.10): When a character is about to be dropped due to garbling, use this
+probability to determine if the character should instead be dimmed, representing a barely audible piece of
+the message. Set to 1.0 to always dim letters instead of dropping, or 0.0 to disable dimming entirely.
+
+**garbleAllDroppedMessage** (~~~): Message replacement to display if you were unlucky enough for your
+entire message to be garbled. Set to null to disable replacement.
+
 **yellMax** (4): Maximum exclamation marks allowed at end of message to increase yelling level.
 
 **yell.#.hunger** (1, 2, 4, 20): Hunger (in half-drumsticks) depleted for each yelling level 
