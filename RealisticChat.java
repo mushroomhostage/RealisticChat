@@ -162,6 +162,9 @@ class RealisticChatListener implements Listener {
             		actSlop = Math.tan((-1*deltaX)/(deltaZ))*(360/(2*Math.PI))+180;
             	if (deltaZ <= 0 && deltaX < 0)
             		actSlop = Math.tan((-1*deltaZ)/(-1*deltaX))*(360/(2*Math.PI))+270;
+
+                actSlop %= 360;
+
             	double micSlop = sender.getLocation().getYaw() * (360/256);
 
                 double degree = Math.abs(micSlop - actSlop);
