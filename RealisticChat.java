@@ -30,9 +30,17 @@ class SmartphoneCall {
 
     //ConcurrentSkipListSet<Player> members; // not Comparable
     HashSet<Player> members;
-    Date whenStarted;
+    Date whenStarted, whenEnded;
 
     public SmartphoneCall(Player caller, Player callee) {
+        // ringing tone
+        new SmartphoneRinger(plugin, caller);
+        new SmartphoneRinger(plugin, callee);
+
+        // TODO: allow other player to pickup! Keep ringing, then the callee should have to
+        // switch their held item to the smartphone in order to pickup. If they don't pick up
+        // in time, or deny the call (shift-switch?) switch to their voicemail.
+
         //members = new ConcurrentSkipListSet<Player>();
         members = new HashSet<Player>();
         members.add(caller);
@@ -44,9 +52,7 @@ class SmartphoneCall {
         calls.put(caller, this);
         calls.put(callee, this);
 
-        // ringing tone
-        new SmartphoneRinger(plugin, caller);
-        new SmartphoneRinger(plugin, callee);
+
     }
 
     /** Find the call a player is participating in.
@@ -71,10 +77,19 @@ class SmartphoneCall {
     /** Destroy a call.
     */
     public void hangup() {
+        whenEnded = new Date();
+
+        long durationMsec = whenEnded.getTime() - whenStarted.getTime();
+        long durationSeconds = (durationMsec / 1000) % 60;
+        long durationMinutes = (durationMsec / 1000) / 60;   // TODO: better duration formatting?
+        String duration = durationMinutes + " m " + durationSeconds + " s";
+
         for (Player member: members) {
-            member.sendMessage("Hung up call");
+            member.sendMessage("Hung up call, lasted " + duration);
             calls.remove(member);
         }
+
+        // TODO: log calls
     }
 }
 
@@ -200,13 +215,13 @@ class RealisticChatListener implements Listener {
                 // Call player name if exists
                 Player caller = sender;
                 Player callee = Bukkit.getPlayer(calleeName); // interestingly, this does prefix matching..
+                // TODO: also check for offline player, to leave offline voicemail
                 if (callee == null) {
                     // TODO: ring but have no one pick up? Your call cannot be completed as dialed.
                     sender.sendMessage("Sorry, I don't understand '"+calleeName+"'");
                     sender.sendMessage("Say a player name to place a call.");
                 } else {
                     sender.sendMessage("Ringing "+callee.getDisplayName()+"...");
-                    // TODO: actually call!
                     new SmartphoneCall(caller, callee);
                 }
             }
