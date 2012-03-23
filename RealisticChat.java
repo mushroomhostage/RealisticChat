@@ -18,9 +18,12 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.enchantments.*;
+import org.bukkit.block.*;
 import org.bukkit.*;
 
 class SmartphoneCall {
+    static RealisticChat plugin;
+
     static ConcurrentHashMap<Player, SmartphoneCall> calls = new ConcurrentHashMap<Player, SmartphoneCall>();
 
     ConcurrentSkipListSet<Player> members;
@@ -61,6 +64,21 @@ class SmartphoneCall {
         for (Player member: members) {
             calls.remove(member);
         }
+    }
+
+    public static void ring(final Player player) {
+        final Location loc = player.getLocation().add(0, 2, 0);
+
+        player.sendBlockChange(loc, Material.NOTE_BLOCK, (byte)0);    // client requires note block
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+            public void run() {
+                Note note = new Note(1, Note.Tone.A, false);
+                player.playNote(loc, Instrument.PIANO, note);
+                // TODO: repeat
+            }
+        });
+        // TODO: revert noteblock
     }
 }
 
@@ -125,13 +143,14 @@ class RealisticChatListener implements Listener {
             // TODO: detect commands, like voice-activated proximity-activated state-of-the-art smartphone
             // Call player name if exists
             Player caller = sender;
-            Player callee = Bukkit.getPlayer(message); // TODO: strip (),!, try to understand
+            Player callee = Bukkit.getPlayer(message); // TODO: strip (),!, try to understand (but interestingly, this does prefix matching..)
             if (callee == null) {
                 // TODO: ring but have no one pick up? Your call cannot be completed as dialed.
                 sender.sendMessage("No callee found: " + message);
             } else {
                 sender.sendMessage("Ringing "+callee.getDisplayName()+"...");
                 // TODO: actually call!
+                SmartphoneCall.ring(caller);
             }
         }
 
@@ -545,6 +564,7 @@ public class RealisticChat extends JavaPlugin {
         }
 
         listener = new RealisticChatListener(this);
+        SmartphoneCall.plugin = this;
     }
 
     /** Get a chat color from a configuration setting.
