@@ -69,36 +69,57 @@ class SmartphoneCall {
     }
 
     public static void ring(final Player player) {
-        final Location loc = player.getLocation().add(0, 2, 0);
-
-        List<Note> notes = new ArrayList<Note>();
-        notes.add(new Note(1, Note.Tone.A, false));
-        notes.add(new Note(1, Note.Tone.B, false));
-        notes.add(new Note(1, Note.Tone.B, false));
-        notes.add(new Note(1, Note.Tone.A, false));
-
-        final Iterator<Note> iter = notes.iterator();
-
-
-        player.sendBlockChange(loc, Material.NOTE_BLOCK, (byte)0);    // client requires note block
-
-        long delay = 0;
-        long period = 20*3;
-
-        final int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
-            public void run() {
-                if (iter.hasNext()) {
-                    player.playNote(loc, Instrument.PIANO, iter.next());
-                } else {
-                    // TODO: revert noteblock
-                    //Bukkit.getScheduler().cancelTask(taskId);
-                }
-            }
-        }, delay, period);
+        new SmartphoneRinger(plugin, player);
     }
 }
 
-class SmartphoneRinger {
+/** Play a sequence of tones representing a telephone ringing. */
+class SmartphoneRinger implements Runnable {
+    private final Location noteblockLocation;
+    private final Iterator<Note> notesIterator;
+    private final int taskId;
+    private final Player player;
+    private final RealisticChat plugin;
+
+    public SmartphoneRinger(RealisticChat plugin, Player player) {
+        this.plugin = plugin;
+        this.player = player;
+
+        // Place a temporary noteblock above the player's head, required by the client to play a note
+        // For why we do this see http://forums.bukkit.org/threads/player-playnote-is-it-broken.65404/#post-1023374
+        // TODO: what if player is at build limit?
+        noteblockLocation  = player.getLocation().add(0, 2, 0);
+        player.sendBlockChange(noteblockLocation, Material.NOTE_BLOCK, (byte)0);
+
+        List<Note> notes = new ArrayList<Note>();
+        // TODO: more phone-like ringing!
+        notes.add(new Note(1, Note.Tone.A, false));
+        notes.add(new Note(1, Note.Tone.A, true));
+        notes.add(new Note(1, Note.Tone.A, false));
+        notes.add(new Note(1, Note.Tone.A, false));
+
+        notesIterator = notes.iterator();
+
+        long delay = 0;
+        long period = 20/2;
+
+        taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this, delay, period);
+    }
+
+    public void run() {
+        if (notesIterator.hasNext()) {
+            Note note = notesIterator.next();
+
+            //plugin.log.info("Play note " + note);
+            player.playNote(noteblockLocation, Instrument.PIANO, note);
+        } else {
+            Bukkit.getScheduler().cancelTask(taskId);
+
+            // Revert temporary noteblock
+            Block lastBlock = noteblockLocation.getBlock();
+            player.sendBlockChange(noteblockLocation, lastBlock.getType(), lastBlock.getData());
+        }
+    }
 }
 
 class RealisticChatListener implements Listener {
