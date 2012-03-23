@@ -5,6 +5,8 @@ import java.util.logging.Logger;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -69,17 +71,34 @@ class SmartphoneCall {
     public static void ring(final Player player) {
         final Location loc = player.getLocation().add(0, 2, 0);
 
+        List<Note> notes = new ArrayList<Note>();
+        notes.add(new Note(1, Note.Tone.A, false));
+        notes.add(new Note(1, Note.Tone.B, false));
+        notes.add(new Note(1, Note.Tone.B, false));
+        notes.add(new Note(1, Note.Tone.A, false));
+
+        final Iterator<Note> iter = notes.iterator();
+
+
         player.sendBlockChange(loc, Material.NOTE_BLOCK, (byte)0);    // client requires note block
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+        long delay = 0;
+        long period = 20*3;
+
+        final int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
             public void run() {
-                Note note = new Note(1, Note.Tone.A, false);
-                player.playNote(loc, Instrument.PIANO, note);
-                // TODO: repeat
+                if (iter.hasNext()) {
+                    player.playNote(loc, Instrument.PIANO, iter.next());
+                } else {
+                    // TODO: revert noteblock
+                    //Bukkit.getScheduler().cancelTask(taskId);
+                }
             }
-        });
-        // TODO: revert noteblock
+        }, delay, period);
     }
+}
+
+class SmartphoneRinger {
 }
 
 class RealisticChatListener implements Listener {
