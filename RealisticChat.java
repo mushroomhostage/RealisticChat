@@ -194,12 +194,16 @@ class RealisticChatListener implements Listener {
                 // Talking to voice-activated phone
                 // TODO: natural language processing
                 // TODO: detect commands, like voice-activated proximity-activated state-of-the-art smartphone
+
+                String calleeName = message.replaceAll("[()!]", "");    // strip punctuation to try to understand better
+
                 // Call player name if exists
                 Player caller = sender;
-                Player callee = Bukkit.getPlayer(message); // TODO: strip (),!, try to understand (but interestingly, this does prefix matching..)
+                Player callee = Bukkit.getPlayer(calleeName); // interestingly, this does prefix matching..
                 if (callee == null) {
                     // TODO: ring but have no one pick up? Your call cannot be completed as dialed.
-                    sender.sendMessage("No callee found: " + message);
+                    sender.sendMessage("Sorry, I don't understand '"+calleeName+"'");
+                    sender.sendMessage("Say a player name to place a call.");
                 } else {
                     sender.sendMessage("Ringing "+callee.getDisplayName()+"...");
                     // TODO: actually call!
