@@ -28,11 +28,13 @@ class SmartphoneCall {
 
     static ConcurrentHashMap<Player, SmartphoneCall> calls = new ConcurrentHashMap<Player, SmartphoneCall>();
 
-    ConcurrentSkipListSet<Player> members;
+    //ConcurrentSkipListSet<Player> members; // not Comparable
+    HashSet<Player> members;
     Date whenStarted;
 
-    public void SmartphoneCall(Player caller, Player callee) {
-        members = new ConcurrentSkipListSet<Player>();
+    public SmartphoneCall(Player caller, Player callee) {
+        //members = new ConcurrentSkipListSet<Player>();
+        members = new HashSet<Player>();
         members.add(caller);
         members.add(callee);
 
@@ -41,6 +43,10 @@ class SmartphoneCall {
         // for lookup
         calls.put(caller, this);
         calls.put(callee, this);
+
+        // ringing tone
+        new SmartphoneRinger(plugin, caller);
+        new SmartphoneRinger(plugin, callee);
     }
 
     /** Find the call a player is participating in.
@@ -56,7 +62,9 @@ class SmartphoneCall {
         recvInfo.add("smartphone");
 
         for (Player member: members) {
-            RealisticChatListener.deliverMessage(member, speaker, message, recvInfo);
+            if (speaker != member) {
+                RealisticChatListener.deliverMessage(member, speaker, "[phone] " + message, recvInfo);
+            }
         }
     }
 
@@ -66,10 +74,6 @@ class SmartphoneCall {
         for (Player member: members) {
             calls.remove(member);
         }
-    }
-
-    public static void ring(final Player player) {
-        new SmartphoneRinger(plugin, player);
     }
 }
 
@@ -179,18 +183,26 @@ class RealisticChatListener implements Listener {
             // calculated in recipient
         } else if (holdingSmartphone(sender)) {
             sendInfo.add("send-phone");
-            // TODO: natural language processing
-            // TODO: detect commands, like voice-activated proximity-activated state-of-the-art smartphone
-            // Call player name if exists
-            Player caller = sender;
-            Player callee = Bukkit.getPlayer(message); // TODO: strip (),!, try to understand (but interestingly, this does prefix matching..)
-            if (callee == null) {
-                // TODO: ring but have no one pick up? Your call cannot be completed as dialed.
-                sender.sendMessage("No callee found: " + message);
+        
+            SmartphoneCall call = SmartphoneCall.lookup(sender);
+            if (call != null) {
+                // We're on a call!
+                call.say(sender, message);
             } else {
-                sender.sendMessage("Ringing "+callee.getDisplayName()+"...");
-                // TODO: actually call!
-                SmartphoneCall.ring(caller);
+                // Nope, talking to voice-activated phone
+                // TODO: natural language processing
+                // TODO: detect commands, like voice-activated proximity-activated state-of-the-art smartphone
+                // Call player name if exists
+                Player caller = sender;
+                Player callee = Bukkit.getPlayer(message); // TODO: strip (),!, try to understand (but interestingly, this does prefix matching..)
+                if (callee == null) {
+                    // TODO: ring but have no one pick up? Your call cannot be completed as dialed.
+                    sender.sendMessage("No callee found: " + message);
+                } else {
+                    sender.sendMessage("Ringing "+callee.getDisplayName()+"...");
+                    // TODO: actually call!
+                    new SmartphoneCall(caller, callee);
+                }
             }
         }
 
