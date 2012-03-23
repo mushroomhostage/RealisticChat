@@ -184,13 +184,14 @@ class RealisticChatListener implements Listener {
             // calculated in recipient
         } else if (holdingSmartphone(sender)) {
             sendInfo.add("send-phone");
-        
+
+      
             SmartphoneCall call = SmartphoneCall.lookup(sender);
             if (call != null) {
                 // We're on a call!
                 call.say(sender, message);
             } else {
-                // Nope, talking to voice-activated phone
+                // Talking to voice-activated phone
                 // TODO: natural language processing
                 // TODO: detect commands, like voice-activated proximity-activated state-of-the-art smartphone
                 // Call player name if exists
@@ -203,6 +204,22 @@ class RealisticChatListener implements Listener {
                     sender.sendMessage("Ringing "+callee.getDisplayName()+"...");
                     // TODO: actually call!
                     new SmartphoneCall(caller, callee);
+                }
+            }
+
+            if (!plugin.getConfig().getBoolean("smartphoneWaterproof", false)) {
+                // Trying to use a phone underwater? Not the best idea
+                // TODO: can we feasibly detect once player enters water? rather not listen to player move event though
+                Block in = sender.getLocation().getBlock().getRelative(BlockFace.DOWN);
+                if (in != null && (in.getType() == Material.WATER || in.getType() == Material.STATIONARY_WATER)) {
+                    if (call != null) {
+                        call.hangup();
+                    }
+
+                    Item item = sender.getWorld().dropItemNaturally(sender.getLocation(), sender.getItemInHand());
+                    item.setPickupDelay(plugin.getConfig().getInt("smartphoneWaterPickupDelay", 10000));     // can't pickup, will despawn before
+                    sender.setItemInHand(null);
+                    sender.sendMessage("Your smartphone was destroyed by water damage");
                 }
             }
         }
