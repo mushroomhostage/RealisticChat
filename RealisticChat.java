@@ -72,6 +72,7 @@ class SmartphoneCall {
     */
     public void hangup() {
         for (Player member: members) {
+            member.sendMessage("Hung up call");
             calls.remove(member);
         }
     }
@@ -566,6 +567,13 @@ class RealisticChatListener implements Listener {
         if (isSmartphone(held)) {
             // TODO: if phone is ringing, answer it! (player switched to phone to pick it up)
             player.sendMessage("Switched to smartphone");
+        } else {
+            // Switching off of phone hangs it up
+            // TODO: other ways to hangup.. dropped item?
+            SmartphoneCall call = SmartphoneCall.lookup(player);
+            if (call != null) {
+                call.hangup();
+            }
         }
     }
 
