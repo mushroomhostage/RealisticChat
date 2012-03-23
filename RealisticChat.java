@@ -6,6 +6,9 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.Date;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.*;
@@ -17,8 +20,52 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.enchantments.*;
 import org.bukkit.*;
 
+class SmartphoneCall {
+    static ConcurrentHashMap<Player, SmartphoneCall> calls = new ConcurrentHashMap<Player, SmartphoneCall>();
+
+    ConcurrentSkipListSet<Player> members;
+    Date whenStarted;
+
+    public void SmartphoneCall(Player caller, Player callee) {
+        members = new ConcurrentSkipListSet<Player>();
+        members.add(caller);
+        members.add(callee);
+
+        whenStarted = new Date();
+
+        // for lookup
+        calls.put(caller, this);
+        calls.put(callee, this);
+    }
+
+    /** Find the call a player is participating in.
+    */
+    public static SmartphoneCall lookup(Player member) {
+        return calls.get(member);
+    }
+
+    /** Send a message to all members on a call.
+    */
+    public void say(Player speaker, String message) {
+        ArrayList<String> recvInfo = new ArrayList<String>();
+        recvInfo.add("smartphone");
+
+        for (Player member: members) {
+            RealisticChatListener.deliverMessage(member, speaker, message, recvInfo);
+        }
+    }
+
+    /** Destroy a call.
+    */
+    public void hangup() {
+        for (Player member: members) {
+            calls.remove(member);
+        }
+    }
+}
+
 class RealisticChatListener implements Listener {
-    RealisticChat plugin;
+    static RealisticChat plugin;
     Random random;
 
     public RealisticChatListener(RealisticChat plugin) {
@@ -227,7 +274,7 @@ class RealisticChatListener implements Listener {
 
     /** Get whether the player has a walkie-talkie ready to talk into.
     */
-    private boolean hasWalkieTalking(Player player) {
+    private static boolean hasWalkieTalking(Player player) {
         if (!plugin.getConfig().getBoolean("walkieEnable", true)) {
             return false;
         }
@@ -239,7 +286,7 @@ class RealisticChatListener implements Listener {
 
     /** Get whether the player has a walkie-talkie ready for listening.
     */
-    private boolean hasWalkieListening(Player player) {
+    private static boolean hasWalkieListening(Player player) {
         if (!plugin.getConfig().getBoolean("walkieEnable", true)) {
             return false;
         }
@@ -261,7 +308,7 @@ class RealisticChatListener implements Listener {
 
     /** Get whether the player has a megaphone to talk into.
     */
-    private boolean holdingMegaphone(Player player) {
+    private static boolean holdingMegaphone(Player player) {
         if (!plugin.getConfig().getBoolean("megaphoneEnable", true)) {
             return false;
         }
@@ -311,7 +358,7 @@ class RealisticChatListener implements Listener {
     }
 
 
-    private String joinList(ArrayList<String> list) {
+    private static String joinList(ArrayList<String> list) {
         StringBuilder sb = new StringBuilder();
         for (String item: list) {
             sb.append(item + ",");
@@ -393,7 +440,7 @@ class RealisticChatListener implements Listener {
         return new String(newMessage);
     }
 
-    private void deliverMessage(Player recipient, Player sender, String message, ArrayList<String> info) {
+    public static void deliverMessage(Player recipient, Player sender, String message, ArrayList<String> info) {
         // TODO: all configurable
         ChatColor senderColor = (sender.equals(recipient) ? plugin.spokenPlayerColor : plugin.heardPlayerColor);
         String prefix = "";
@@ -415,7 +462,7 @@ class RealisticChatListener implements Listener {
    
     /** Get the direction a megaphone-amplified message came from, if possible.
     */
-    private String megaphoneDirection(Player recipient, Player sender){
+    private static String megaphoneDirection(Player recipient, Player sender){
         if (!plugin.getConfig().getBoolean("megaphoneEnable", true) || !holdingMegaphone(sender)) {
             return "";
         }
