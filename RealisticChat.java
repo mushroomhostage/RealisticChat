@@ -155,22 +155,26 @@ class RealisticChatListener implements Listener {
             	double deltaX = recipient.getLocation().getX() - sender.getLocation().getX();
             	double actSlop = 0;
             	if (deltaZ <= 0 && deltaX >= 0)
-            		actSlop = Math.tan(deltaX/(-1*deltaZ))*(360/(2*3.14159));
+            		actSlop = Math.tan(deltaX/(-1*deltaZ))*(360/(2*Math.PI));
             	if (deltaZ >= 0 && deltaX > 0)
-            		actSlop = Math.tan(deltaZ/(deltaX))*(360/(2*3.14159))+90;
+            		actSlop = Math.tan(deltaZ/(deltaX))*(360/(2*Math.PI))+90;
             	if (deltaZ > 0 && deltaX <= 0)
-            		actSlop = Math.tan((-1*deltaX)/(deltaZ))*(360/(2*3.14159))+180;
+            		actSlop = Math.tan((-1*deltaX)/(deltaZ))*(360/(2*Math.PI))+180;
             	if (deltaZ <= 0 && deltaX < 0)
-            		actSlop = Math.tan((-1*deltaZ)/(-1*deltaX))*(360/(2*3.14159))+270;
+            		actSlop = Math.tan((-1*deltaZ)/(-1*deltaX))*(360/(2*Math.PI))+270;
             	double micSlop = sender.getLocation().getYaw() * (360/256);
+
+                double degree = Math.abs(micSlop - actSlop);
 
                 recvInfo.add("mega-actSlop=" + actSlop);
                 recvInfo.add("mega-micSlop=" + micSlop);
                 recvInfo.add("mega-deltaZ=" + deltaZ);
                 recvInfo.add("mega-deltaX=" + deltaX);
+                recvInfo.add("degree=" + degree);
 
-                // 70 degrees is the default Minecraft FOV; divide it in half to get 35 degree width on each side.
-            	if (Math.abs(micSlop - actSlop) < (plugin.getConfig().getDouble("megaphoneWidthDegrees", 70.0))){
+                // If within 70 degrees (the default Minecraft FOV), heard megaphone
+                
+            	if (degree < plugin.getConfig().getDouble("megaphoneWidthDegrees", 70.0)){
                     recvInfo.add("heard-mega");
             		hearingRange *= plugin.getConfig().getDouble("megaphoneFactor", 2.0);
             	}
@@ -211,6 +215,10 @@ class RealisticChatListener implements Listener {
         }
 
         // Deliver the message manually, so we can customize the chat display 
+        // TODO: we really should NOT cancel the event, instead let it through and use setFormat() 
+        // to customize the display. This will increase compatibility with other chat programs.
+        // The problem is how to deliver the messages twice.. (sendMessage for one of them?)
+        // See discussion at http://forums.bukkit.org/threads/help-how-to-stop-other-players-from-seeing-chat.66537/#post-1035424
         event.setCancelled(true);
     }
 
