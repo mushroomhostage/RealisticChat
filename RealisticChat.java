@@ -155,13 +155,13 @@ class RealisticChatListener implements Listener {
             	double deltaX = recipient.getLocation().getX() - sender.getLocation().getX();
             	double actSlop = 0;
             	if (deltaZ <= 0 && deltaX >= 0)
-            		actSlop = Math.tan(deltaX/(-1*deltaZ))*(360/(2*Math.PI));
+            		actSlop = Math.toDegrees(Math.tan(deltaX/(-1*deltaZ)));
             	if (deltaZ >= 0 && deltaX > 0)
-            		actSlop = Math.tan(deltaZ/(deltaX))*(360/(2*Math.PI))+90;
+            		actSlop = Math.toDegrees(Math.tan(deltaZ/(deltaX)))+90;
             	if (deltaZ > 0 && deltaX <= 0)
-            		actSlop = Math.tan((-1*deltaX)/(deltaZ))*(360/(2*Math.PI))+180;
+            		actSlop = Math.toDegrees(Math.tan((-1*deltaX)/(deltaZ)))+180;
             	if (deltaZ <= 0 && deltaX < 0)
-            		actSlop = Math.tan((-1*deltaZ)/(-1*deltaX))*(360/(2*Math.PI))+270;
+            		actSlop = Math.toDegrees(Math.tan((-1*deltaZ)/(-1*deltaX)))+270;
 
                 actSlop %= 360;
 
@@ -173,12 +173,12 @@ class RealisticChatListener implements Listener {
                 recvInfo.add("mega-micSlop=" + micSlop);
                 recvInfo.add("mega-deltaZ=" + deltaZ);
                 recvInfo.add("mega-deltaX=" + deltaX);
-                recvInfo.add("degree=" + degree);
+                recvInfo.add("mega-degree=" + degree);
 
                 // If within 70 degrees (the default Minecraft FOV), heard megaphone
                 
             	if (degree < plugin.getConfig().getDouble("megaphoneWidthDegrees", 70.0)){
-                    recvInfo.add("heard-mega");
+                    recvInfo.add("mega-HEARD");
             		hearingRange *= plugin.getConfig().getDouble("megaphoneFactor", 2.0);
             	}
             }
