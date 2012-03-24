@@ -310,19 +310,24 @@ class RealisticChatListener implements Listener {
             	double deltaX = recipient.getLocation().getX() - sender.getLocation().getX();
             	double actSlop = 0;
             	if (deltaZ <= 0 && deltaX >= 0)
-            		actSlop = Math.toDegrees(Math.tan(deltaX/(-1*deltaZ)));
+            		actSlop = Math.toDegrees(Math.tan(deltaX/(-1*deltaZ)))+180;
             	if (deltaZ >= 0 && deltaX > 0)
-            		actSlop = Math.toDegrees(Math.tan(deltaZ/(deltaX)))+90;
+            		actSlop = Math.toDegrees(Math.tan(deltaZ/(deltaX)))+270;
             	if (deltaZ > 0 && deltaX <= 0)
-            		actSlop = Math.toDegrees(Math.tan((-1*deltaX)/(deltaZ)))+180;
+            		actSlop = Math.toDegrees(Math.tan((-1*deltaX)/(deltaZ)));
             	if (deltaZ <= 0 && deltaX < 0)
-            		actSlop = Math.toDegrees(Math.tan((-1*deltaZ)/(-1*deltaX)))+270;
+            		actSlop = Math.toDegrees(Math.tan((-1*deltaZ)/(-1*deltaX)))+90;
 
                 actSlop %= 360;
 
             	double micSlop = sender.getLocation().getYaw() * (360/256);
+            	
+            	double dMicSlop = (micSlop +180)%360;
+            	double dActSlop = (actSlop +180)%360;
 
                 double degree = Math.abs(micSlop - actSlop);
+                
+                double ddegree = Math.abs(dMicSlop = dActSlop);
 
                 recvInfo.add("mega-actSlop=" + actSlop);
                 recvInfo.add("mega-micSlop=" + micSlop);
@@ -332,7 +337,7 @@ class RealisticChatListener implements Listener {
 
                 // If within 70 degrees (the default Minecraft FOV), heard megaphone
                 
-            	if (degree < plugin.getConfig().getDouble("megaphoneWidthDegrees", 70.0)){
+            	if (degree < plugin.getConfig().getDouble("megaphoneWidthDegrees", 70.0) || ddegree < plugin.getConfig().getDouble("megaphoneWidthDegrees", 70.0)){
                     recvInfo.add("mega-HEARD");
             		hearingRange *= plugin.getConfig().getDouble("megaphoneFactor", 2.0);
             	}
