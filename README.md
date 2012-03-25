@@ -65,9 +65,9 @@ the message. Set to 1.0 to always dim letters instead of dropping, or 0.0 to dis
 **garbleAllDroppedMessage** (~~~): Message replacement to display if you were unlucky enough for your
 entire message to be garbled. Set to null to disable replacement.
 
-**chatLineFormat** (player: message): The format of the chat line to be shown to the player. "player"
-is replaced with the player's display name, and "message" with the message text. For the traditional
-chat display, try "<player> message", or to hide player names for anonymous chat, use just "message".
+**chatLineFormat** (%1$s: %2$s): The format of the chat line to be shown to the player. The first argument
+is replaced with the player's display name, and the second with the message text. For the traditional
+chat display, try "<%1$s> %2$s", or to hide player names for anonymous chat, use just "%2$s".
 
 **chatSpokenPlayerColor** (YELLOW): Color of player name shown to a player when they themselves speak.
 

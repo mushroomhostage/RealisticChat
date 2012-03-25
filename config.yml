@@ -2,7 +2,7 @@ speakingRangeMeters: 50.0
 garbleRangeDivisor: 2.0
 garblePartialChance: 0.10
 garbleAllDroppedMessage: "~~~"
-chatLineFormat: "player: message"
+chatLineFormat: "%1$s: %2$s"
 chatSpokenPlayerColor: YELLOW
 chatHeardPlayerColor: GREEN
 chatMessageColor: WHITE

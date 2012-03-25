@@ -562,11 +562,11 @@ class RealisticChatListener implements Listener {
             prefix = megaphoneDirection(recipient, sender);
         }
 
-        // TODO: use String.Format, like PlayerChatEvent setFormat() - better than string replacements
-        String format = plugin.getConfig().getString("chatLineFormat", "player: message");
-        String formattedMessage = format.
-            replace("player", senderColor + sender.getDisplayName() + plugin.messageColor).
-            replace("message", prefix + message);
+        // TODO: instead, use recipient.chat() and PlayerChatEvent setFormat(), so other plugins see the chat, too
+        String format = plugin.getConfig().getString("chatLineFormat", "%1$s: %2$s");
+        String formattedMessage = String.format(format, 
+            senderColor + sender.getDisplayName() + plugin.messageColor,
+            prefix + message);
 
         recipient.sendMessage(formattedMessage);
 
