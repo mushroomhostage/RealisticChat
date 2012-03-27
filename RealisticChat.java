@@ -157,7 +157,22 @@ class RealisticChatListener implements Listener {
     public void onPlayerChat(PlayerChatEvent event) {
         Player sender = event.getPlayer();
         String message = event.getMessage();
+
         ArrayList<String> sendInfo = new ArrayList<String>();
+
+        // First, global prefix overrides all
+        if (message.startsWith(getGlobalPrefix())) {
+            sendInfo.add("global");
+            String newMessage = message.substring(getGlobalPrefix().length());
+            // TODO: refactor with onPlayerCommandPreprocess global
+            for (Player recipient: event.getRecipients()) {    
+                deliverMessage(recipient, sender, neweessage, sendInfo);
+            }
+            
+            event.setCancelled(true);
+            return;
+        }
+
 
         // TODO: change to sound pressure level instead of distance based
         // see http://en.wikipedia.org/wiki/Sound_pressure#Examples_of_sound_pressure_and_sound_pressure_levels
@@ -622,17 +637,16 @@ class RealisticChatListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled=true) 
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        String globalPrefix = plugin.getConfig().getString("globalPrefix", "/g ");
-        if (globalPrefix == null) {
+        if (getGlobalPrefix() == null) {
             return;
         }
 
-        if (event.getMessage().startsWith(globalPrefix)) {
+        if (event.getMessage().startsWith(getGlobalPrefix())) {
             ArrayList<String> recvInfo = new ArrayList<String>();
             recvInfo.add("global");
 
             Player sender = event.getPlayer();
-            String message = event.getMessage().substring(globalPrefix.length());
+            String message = event.getMessage().substring(getGlobalPrefix().length());
 
             for (Player recipient: event.getRecipients()) {     // TODO: explicitly loop all online players instead?
                 deliverMessage(recipient, sender, message, recvInfo);
@@ -641,6 +655,13 @@ class RealisticChatListener implements Listener {
             // TODO: pass through for other plugins, or send player chat event globally..
             event.setCancelled(true);
         }
+    }
+
+    /** Get prefix for messages to be sent globally.
+    May be a command (beginning with '/'), normal chat message, or null (if disabled)
+    */
+    private String getGlobalPrefix() {
+        return plugin.getConfig().getString("globalPrefix", "/g ");
     }
 
     /** Get whether the item is a smart phone device.
