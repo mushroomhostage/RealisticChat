@@ -10,7 +10,7 @@ Features:
 * Bullhorns
 * Ear trumpets
 * Walkie-talkies
-* Global chat
+* Global chat prefix
 
 ## Basic Usage
 Talk normally. You'll only be able to clearly hear other players within 25 meters.
@@ -29,7 +29,8 @@ can decrease your chat range by **whispering**, for example: "*(lets go)*". Only
 ## Advanced Usage
 
 To further increase your chat range, speak while holding a **bullhorn** (diamond). This will double your
-range, and can be used in conjunction with yelling. Players hearing messages from bullhorns
+range within a conical region in front of you, just like a real bullhorn (or megaphone).
+Bullhorns can be used in conjunction with yelling. Additionally, players hearing messages from bullhorns
 will recognize the direction it is coming from -- you can use this ability for [acoustic location](http://en.wikipedia.org/wiki/Acoustic_location)
 if you get lost.
 

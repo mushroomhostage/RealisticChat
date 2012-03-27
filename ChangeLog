@@ -1,3 +1,7 @@
+    1.1
+    * Add bullhorn, with directional amplification in front of player; replaces megaphone
+    * Add optional global chat prefix
+    * Add configuration options for customizing chat color, message format, items, and more
 
 2012-03-20  1.0a
     * Create a default config.yml automatically on startup
