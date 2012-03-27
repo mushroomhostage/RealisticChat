@@ -118,7 +118,8 @@ Using the defaults, beyond 2000.0/2 = 1000 m the messages will break up, and fro
 will be clear.
 
 **globalPrefix** ('/g '): Messages beginning this prefix will be delivered globally, regardless
-of local chat restrictions. 
+of local chat restrictions. You can either use a command (examples: '/g ' or '/s '), or a prefix in
+normal chat (example: '@'). Set to null to disable.
 
 
 

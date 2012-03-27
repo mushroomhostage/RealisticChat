@@ -166,7 +166,7 @@ class RealisticChatListener implements Listener {
             String newMessage = message.substring(getGlobalPrefix().length());
             // TODO: refactor with onPlayerCommandPreprocess global
             for (Player recipient: event.getRecipients()) {    
-                deliverMessage(recipient, sender, neweessage, sendInfo);
+                deliverMessage(recipient, sender, newMessage, sendInfo);
             }
             
             event.setCancelled(true);
