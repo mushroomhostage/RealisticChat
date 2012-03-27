@@ -209,7 +209,7 @@ class RealisticChatListener implements Listener {
         }
 
         // Speaking into certain devices
-        if (holdingMegaphone(sender)) {
+        if (holdingBullhorn(sender)) {
             sendInfo.add("send-mega");
             // calculated in recipient
         } else if (holdingSmartphone(sender)) {
@@ -311,7 +311,7 @@ class RealisticChatListener implements Listener {
 
             double hearingRange = speakingRange;
             
-            if (holdingMegaphone(sender)) {
+            if (holdingBullhorn(sender)) {
             	/*
             	 * actSlop is measured in yaw, which itself is measured in 256 degrees, instead of
             	 * 360. actSlop is the degrees yaw of the angle from sender to rec. 
@@ -319,7 +319,7 @@ class RealisticChatListener implements Listener {
             	 * statement on the left hand side of the "less than" symbol gives the difference between the 
             	 * two slopes and the right hand side of the if statement checks to make sure the difference
             	 * is less than 35 degrees by default. This makes sure the receiving player is in the "sound cone".
-            	 * If so, the megaphone multipier is applied to the hearingRange of this receiving player.
+            	 * If so, the bullhorn multipier is applied to the hearingRange of this receiving player.
             	 */
             	double deltaZ = recipient.getLocation().getZ() - sender.getLocation().getZ();
             	double deltaX = recipient.getLocation().getX() - sender.getLocation().getX();
@@ -350,11 +350,11 @@ class RealisticChatListener implements Listener {
                 recvInfo.add("mega-deltaX=" + deltaX);
                 recvInfo.add("mega-degree=" + degree);
 
-                // If within 70 degrees (the default Minecraft FOV), heard megaphone
+                // If within 70 degrees (the default Minecraft FOV), heard bullhorn
                 
-            	if (degree < plugin.getConfig().getDouble("megaphoneWidthDegrees", 70.0) || ddegree < plugin.getConfig().getDouble("megaphoneWidthDegrees", 70.0)){
+            	if (degree < plugin.getConfig().getDouble("bullhornWidthDegrees", 70.0) || ddegree < plugin.getConfig().getDouble("bullhornWidthDegrees", 70.0)){
                     recvInfo.add("mega-HEARD");
-            		hearingRange *= plugin.getConfig().getDouble("megaphoneFactor", 2.0);
+            		hearingRange *= plugin.getConfig().getDouble("bullhornFactor", 2.0);
             	}
             }
 
@@ -434,16 +434,16 @@ class RealisticChatListener implements Listener {
         return false;
     }
 
-    /** Get whether the player has a megaphone to talk into.
+    /** Get whether the player has a bullhorn to talk into.
     */
-    private static boolean holdingMegaphone(Player player) {
-        if (!plugin.getConfig().getBoolean("megaphoneEnable", true)) {
+    private static boolean holdingBullhorn(Player player) {
+        if (!plugin.getConfig().getBoolean("bullhornEnable", true)) {
             return false;
         }
 
         ItemStack held = player.getItemInHand();
 
-        return held != null && held.getTypeId() == plugin.megaphoneItemId;
+        return held != null && held.getTypeId() == plugin.bullhornItemId;
     }
 
     /** Get the range increase of the ear trumpet the player is wearing, or 0 if none.
@@ -573,8 +573,8 @@ class RealisticChatListener implements Listener {
         ChatColor senderColor = (sender.equals(recipient) ? plugin.spokenPlayerColor : plugin.heardPlayerColor);
         String prefix = "";
 
-        if (holdingMegaphone(sender)) {
-            prefix = megaphoneDirection(recipient, sender);
+        if (holdingBullhorn(sender)) {
+            prefix = bullhornDirection(recipient, sender);
         }
 
         // TODO: instead, use recipient.chat() and PlayerChatEvent setFormat(), so other plugins see the chat, too
@@ -590,10 +590,10 @@ class RealisticChatListener implements Listener {
         plugin.log.info("[RealisticChat] ("+joinList(info)+") "+sender.getName() + " -> " + recipient.getName() + ": " + message);
     }
    
-    /** Get the direction a megaphone-amplified message came from, if possible.
+    /** Get the direction a bullhorn-amplified message came from, if possible.
     */
-    private static String megaphoneDirection(Player recipient, Player sender){
-        if (!plugin.getConfig().getBoolean("megaphoneEnable", true) || !holdingMegaphone(sender)) {
+    private static String bullhornDirection(Player recipient, Player sender){
+        if (!plugin.getConfig().getBoolean("bullhornEnable", true) || !holdingBullhorn(sender)) {
             return "";
         }
 
@@ -688,7 +688,7 @@ public class RealisticChat extends JavaPlugin {
     Logger log = Logger.getLogger("Minecraft");
     RealisticChatListener listener;
 
-    int walkieItemId, megaphoneItemId, smartphoneItemId;
+    int walkieItemId, bullhornItemId, smartphoneItemId;
     ChatColor spokenPlayerColor, heardPlayerColor, messageColor, dimMessageColor;
 
     public void onEnable() {
@@ -698,7 +698,7 @@ public class RealisticChat extends JavaPlugin {
         reloadConfig();
 
         walkieItemId = getConfigItemId("walkieItem", Material.COMPASS.getId());
-        megaphoneItemId = getConfigItemId("megaphoneItem", Material.DIAMOND.getId());
+        bullhornItemId = getConfigItemId("bullhornItem", Material.DIAMOND.getId());
         smartphoneItemId = getConfigItemId("smartphoneItem", Material.WATCH.getId());
 
         spokenPlayerColor = getConfigColor("chatSpokenPlayerColor", ChatColor.YELLOW);

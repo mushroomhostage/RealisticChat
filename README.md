@@ -7,9 +7,10 @@ Features:
 * Local chat 
 * Yelling
 * Whispering
-* Megaphones
+* Bullhorns
 * Ear trumpets
 * Walkie-talkies
+* Global chat
 
 ## Basic Usage
 Talk normally. You'll only be able to clearly hear other players within 25 meters.
@@ -27,8 +28,8 @@ can decrease your chat range by **whispering**, for example: "*(lets go)*". Only
 
 ## Advanced Usage
 
-To further increase your chat range, speak while holding a **megaphone** (diamond). This will double your
-range, and can be used in conjunction with yelling. Players hearing messages from megaphones
+To further increase your chat range, speak while holding a **bullhorn** (diamond). This will double your
+range, and can be used in conjunction with yelling. Players hearing messages from bullhorns
 will recognize the direction it is coming from -- you can use this ability for [acoustic location](http://en.wikipedia.org/wiki/Acoustic_location)
 if you get lost.
 
@@ -90,13 +91,13 @@ each yelling level.
 For example, 40.0 will decrease the normal 50.0 range to 10.0 meters maximum. The garble range divisor still
 applies, so (by default) only those 10.0/2 = 5.0 meters away will hear you clearly.
 
-**megaphoneEnable** (true): Enable or disable megaphones. 
+**bullhornEnable** (true): Enable or disable bullhorns. 
 
-**megaphoneItem** (diamond): The hand-held item to use to represent megaphones.
+**bullhornItem** (diamond): The hand-held item to use to represent bullhorns.
 
-**megaphoneFactor** (2.0): Multiply chat range by this value when player is holding a megaphone (diamond).
+**bullhornFactor** (2.0): Multiply chat range by this value when player is holding a bullhorn (diamond).
 
-**megaphoneWidthDegrees** (70.0): Width of the megaphone conical region in front of the player, in degrees.
+**bullhornWidthDegrees** (70.0): Width of the bullhorn conical region in front of the player, in degrees.
 70 is the default Minecraft field-of-view.
 
 **earTrumpetEnable** (true): Enable or disable ear trumpets.
