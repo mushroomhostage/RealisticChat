@@ -563,6 +563,8 @@ class RealisticChatListener implements Listener {
         }
 
         // TODO: instead, use recipient.chat() and PlayerChatEvent setFormat(), so other plugins see the chat, too
+        // or, construct a PlayerChatEvent and send it ourselves so other plugins can format messages from cells/walkies
+        // .. but the challenge is avoiding infinite recursion
         String format = plugin.getConfig().getString("chatLineFormat", "%1$s: %2$s");
         String formattedMessage = String.format(format, 
             senderColor + sender.getDisplayName() + plugin.messageColor,
@@ -615,6 +617,29 @@ class RealisticChatListener implements Listener {
             if (call != null) {
                 call.hangup();
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled=true) 
+    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+        String globalPrefix = plugin.getConfig().getString("globalPrefix", "/g ");
+        if (globalPrefix == null) {
+            return;
+        }
+
+        if (event.getMessage().startsWith(globalPrefix)) {
+            ArrayList<String> recvInfo = new ArrayList<String>();
+            recvInfo.add("global");
+
+            Player sender = event.getPlayer();
+            String message = event.getMessage().substring(globalPrefix.length());
+
+            for (Player recipient: event.getRecipients()) {     // TODO: explicitly loop all online players instead?
+                deliverMessage(recipient, sender, message, recvInfo);
+            }
+            
+            // TODO: pass through for other plugins, or send player chat event globally..
+            event.setCancelled(true);
         }
     }
 
