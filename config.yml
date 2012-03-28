@@ -31,6 +31,6 @@ walkieItem: compass
 walkieRangeMeters: 2000.0
 walkieGarbleDivisor: 2.0
 globalPrefix: '/g '
-smartphoneEnable: true
-smartphoneItem: watch
+#smartphoneEnable: true
+#smartphoneItem: watch
 

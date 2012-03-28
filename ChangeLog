@@ -1,6 +1,7 @@
-    1.1
-    * Add bullhorn, with directional amplification in front of player; replaces megaphone
-    * Add optional global chat prefix
+2012-03-27  1.1
+    * Add bullhorn, with directional amplification in front of player (replaces megaphone)
+    * Add optional global chat prefix 
+    * Add partial message garbling
     * Add configuration options for customizing chat color, message format, items, and more
 
 2012-03-20  1.0a
