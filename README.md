@@ -2,6 +2,8 @@ CakeMushroom's RealisticChat - realistic local chat!
 
 *a collaboration of cakenggt and mushroomhostage*
 
+***New! [RealisticChat 1.1](http://dev.bukkit.org/server-mods/realisticchat/files/3-realistic-chat-1-1/)*** - **released 2012/03/27, adds directional bullhorns, global chat, more configurability – 1.2.4 development builds supported**
+
 Features:
 
 * Local chat 
@@ -122,6 +124,4 @@ will be clear.
 **globalPrefix** ('/g '): Messages beginning this prefix will be delivered globally, regardless
 of local chat restrictions. You can either use a command (examples: '/g ' or '/s '), or a prefix in
 normal chat (example: '@'). Set to null to disable.
-
-
 
