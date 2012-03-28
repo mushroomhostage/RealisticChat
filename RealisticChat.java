@@ -212,7 +212,8 @@ class RealisticChatListener implements Listener {
         if (holdingBullhorn(sender)) {
             sendInfo.add("send-mega");
             // calculated in recipient
-        } else if (holdingSmartphone(sender)) {
+        } /* TODO: enable for smartphone
+        else if (holdingSmartphone(sender)) {
             sendInfo.add("send-phone");
 
       
@@ -256,7 +257,7 @@ class RealisticChatListener implements Listener {
                     sender.sendMessage("Your smartphone was destroyed by water damage");
                 }
             }
-        }
+        }*/
 
         // Log that the player tried to talk
         sendInfo.add("r="+speakingRange);
@@ -615,6 +616,8 @@ class RealisticChatListener implements Listener {
     	return addition;
     }
 
+    /* TODO: enable for smartphone
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled=true)
     public void onPlayerItemHeld(PlayerItemHeldEvent event) {
         Player player = event.getPlayer();
@@ -634,6 +637,7 @@ class RealisticChatListener implements Listener {
             }
         }
     }
+    */
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled=true) 
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
@@ -667,7 +671,7 @@ class RealisticChatListener implements Listener {
     /** Get whether the item is a smart phone device.
     */
     private boolean isSmartphone(ItemStack item) {
-        if (!plugin.getConfig().getBoolean("smartphoneEnable", true)) {
+        if (!plugin.getConfig().getBoolean("smartphoneEnable", false)) { // TODO: enable for smartphone
             return false;
         }
 
