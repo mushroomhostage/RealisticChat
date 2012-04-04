@@ -69,7 +69,7 @@ class SmartphoneCall {
 
         for (Player member: members) {
             if (speaker != member) {
-                RealisticChatListener.deliverMessage(member, speaker, "[phone] " + message, recvInfo);
+                RealisticChatListener.deliverMessage(member, speaker, "cell" + RealisticChatListener.getDeviceTag() + message, recvInfo);
             }
         }
     }
@@ -297,14 +297,14 @@ class RealisticChatListener implements Listener {
                 if (distance < walkieClearRange){
                     // Coming in loud and clear!
                     // TODO: show as from walkie-talkie, but with callsign of sender? (instead of "foo:[via walkie]" "walkie:foo")
-                    deliverMessage(recipient, sender, "[via walkie] " + message, recvInfoWalkie);
+                    deliverMessage(recipient, sender, "walkie" + getDeviceTag() + message, recvInfoWalkie);
                 } else if (distance < walkieMaxRange) {
                     // Can't quite make you out..
                     double walkieClarity = 1 - ((distance - walkieClearRange) / walkieMaxRange);
 
                     recvInfoWalkie.add("wc="+walkieClarity);
 
-                	deliverMessage(recipient, sender, "[via walkie] " + garbleMessage(message, walkieClarity), recvInfoWalkie);
+                	deliverMessage(recipient, sender, "walkie" + getDeviceTag() + garbleMessage(message, walkieClarity), recvInfoWalkie);
                 }
                 // also fall through and deliver message locally
             }
@@ -568,26 +568,59 @@ class RealisticChatListener implements Listener {
         return new String(newMessage);
     }
 
+    public static String getDeviceTag() {
+        return plugin.getConfig().getString("chatDeviceTag", "|"); // TODO: special character
+    }
+
     public static void deliverMessage(Player recipient, Player sender, String message, ArrayList<String> info) {
         // TODO: all configurable
         ChatColor senderColor = (sender.equals(recipient) ? plugin.spokenPlayerColor : plugin.heardPlayerColor);
         String prefix = "";
 
         if (holdingBullhorn(sender)) {
+            // TODO: formatting here too
             prefix = bullhornDirection(recipient, sender);
         }
 
-        // TODO: instead, use recipient.chat() and PlayerChatEvent setFormat(), so other plugins see the chat, too
-        // or, construct a PlayerChatEvent and send it ourselves so other plugins can format messages from cells/walkies
-        // .. but the challenge is avoiding infinite recursion
-        String format = plugin.getConfig().getString("chatLineFormat", "%1$s: %2$s");
+        String device = null;
+
+        // Tagged message, from a device
+        int divider = message.indexOf(getDeviceTag());
+        if (divider != -1) {
+            device = message.substring(0, divider);
+            message = message.substring(divider + 1);
+        }
+
+        // Get the message format accordingly depending on how it was received
+        String defaultFormat = plugin.getConfig().getString("chatLineFormat", "%1$s: %2$s");
+        String format = defaultFormat;
+
+        if (device != null) {
+            if (device.equals("walkie")) {
+                format = plugin.getConfig().getString("walkieChatLineFormat", "[walkie] %1$s: %2$s");
+            } else if (device.equals("cell")) {
+                format = plugin.getConfig().getString("smartphoneChatLineFormat", "[cell] %1$s: %2$s");
+            }
+        }
+
+        if (format == null) {
+            format = defaultFormat;
+        }
+
+        // Format the message
         String formattedMessage = String.format(format, 
             senderColor + sender.getDisplayName() + plugin.messageColor,
             prefix + message);
 
         recipient.sendMessage(formattedMessage);
 
+        // TODO: instead, use recipient.chat() and PlayerChatEvent setFormat(), so other plugins see the chat, too
+        // or, construct a PlayerChatEvent and send it ourselves so other plugins can format messages from cells/walkies
+        // .. but the challenge is avoiding infinite recursion (TODO: tagged messages, don't resend if tagged)
+
+
         plugin.log.info("[RealisticChat] ("+joinList(info)+") "+sender.getName() + " -> " + recipient.getName() + ": " + message);
+        //plugin.log.info(formattedMessage);
     }
    
     /** Get the direction a bullhorn-amplified message came from, if possible.
