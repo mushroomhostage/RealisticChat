@@ -32,6 +32,7 @@ walkieItem: compass
 walkieRangeMeters: 2000.0
 walkieGarbleDivisor: 2.0
 walkieChatLineFormat: "[walkie] %1$s: %2$s"
+walkieHearLocally: true
 globalPrefix: '/g '
 smartphoneEnable: true
 smartphoneItem: watch

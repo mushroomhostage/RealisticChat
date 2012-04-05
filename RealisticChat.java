@@ -311,6 +311,9 @@ class RealisticChatListener implements Listener {
 
                 	deliverMessage(recipient, sender, "walkie" + getDeviceTag() + garbleMessage(message, walkieClarity), recvInfoWalkie);
                 }
+                if (!plugin.getConfig().getBoolean("walkieHearLocally", true)) {
+                    continue;
+                }
                 // also fall through and deliver message locally
             }
 

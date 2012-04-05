@@ -128,6 +128,11 @@ will be clear.
 **walkieChatLineFormat** ("[walkie] %1$s: %2$s"): Messages received from walkie-talkies will
 be formatted using this format string. See also chatLineFormat.
 
+**walkieHearLocally** (true): When talking into a walkie-walkie, allow other people nearby to overhear
+you. This adds realism since you'll have to whisper or go away from other players to have a private
+conversation, but can show doubled messages if the player you're talking to on teh walkie is near enough to hear
+you locally as well.  If false, the message will only be sent into the walkie-talkie, not to nearby users.
+
 **globalPrefix** ('/g '): Messages beginning this prefix will be delivered globally, regardless
 of local chat restrictions. You can either use a command (examples: '/g ' or '/s '), or a prefix in
 normal chat (example: '@'). Set to null to disable.
