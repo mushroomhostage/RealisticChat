@@ -103,6 +103,10 @@ applies, so (by default) only those 10.0/2 = 5.0 meters away will hear you clear
 **bullhornWidthDegrees** (70.0): Width of the bullhorn conical region in front of the player, in degrees.
 70 is the default Minecraft field-of-view.
 
+**bullhornChatLineFormat** ("%1$s [%3$s]: %2$s"): Messages received from bullhorns will be formatted
+using this format string, with the third field replaced by the compass direction from where the message was
+received. See also chatLineFormat.
+
 **earTrumpetEnable** (true): Enable or disable ear trumpets.
 
 **earTrumpetEnableCrafting** (true): Enable or disable crafting of ear trumpets.

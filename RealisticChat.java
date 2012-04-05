@@ -580,11 +580,6 @@ class RealisticChatListener implements Listener {
         ChatColor senderColor = (sender.equals(recipient) ? plugin.spokenPlayerColor : plugin.heardPlayerColor);
         String prefix = "";
 
-        if (holdingBullhorn(sender)) {
-            // TODO: formatting here too
-            prefix = bullhornDirection(recipient, sender);
-        }
-
         String device = null;
 
         // Tagged message, from a device
@@ -597,6 +592,14 @@ class RealisticChatListener implements Listener {
         // Get the message format accordingly depending on how it was received
         String defaultFormat = plugin.getConfig().getString("chatLineFormat", "%1$s: %2$s");
         String format = defaultFormat;
+
+        if (holdingBullhorn(sender)) {      // TODO: move to device tagging on message like walkie/cell
+            format = String.format(plugin.getConfig().getString("bullhornChatLineFormat", "%1$s [%3$s]: %2$s"),
+                    "%1$s",
+                    "%2$s", 
+                    bullhornDirection(recipient, sender));
+        }
+
 
         if (device != null) {
             if (device.equals("walkie")) {
@@ -640,13 +643,13 @@ class RealisticChatListener implements Listener {
         double senZ = sender.getLocation().getZ();
 
         if (recZ > senZ)
-            addition = addition + "[North";
+            addition += "North";
         if (recZ < senZ)
-            addition = addition + "[South";
+            addition += "South";
         if (recX > senX)
-            addition = addition + "West]";
+            addition += "West";
         if (recX < senX)
-            addition = addition + "East]";
+            addition += "East";
 
     	return addition;
     }
