@@ -137,6 +137,9 @@ you locally as well.  If false, the message will only be sent into the walkie-ta
 of local chat restrictions. You can either use a command (examples: '/g ' or '/s '), or a prefix in
 normal chat (example: '@'). Set to null to disable.
 
+**globalChatLineFormat** ("[global] %1$s: %2$s"): Messages sent using /g will be formatted using
+this format string. See also chatLineFormat.
+
 **smartphoneEnable** (true): Enable smartphones.
 
 **smartphoneItem** (watch): Item to use to represent a smartphone.

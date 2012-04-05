@@ -163,7 +163,7 @@ class RealisticChatListener implements Listener {
         String message = event.getMessage();
 
         if (message.startsWith(getDeviceTag())) {
-            // we made this event.. don't recurse! let it pass through
+            // we made this event.. don't recurse! let it pass through to other plugins
             return;
         }
 
@@ -171,12 +171,7 @@ class RealisticChatListener implements Listener {
 
         // First, global prefix overrides all
         if (message.startsWith(getGlobalPrefix())) {
-            sendInfo.add("global");
-            String newMessage = message.substring(getGlobalPrefix().length());
-            // TODO: refactor with onPlayerCommandPreprocess global
-            for (Player recipient: event.getRecipients()) {    
-                deliverMessage(recipient, sender, newMessage, sendInfo);
-            }
+            globallyDeliverMessage(sender, message.substring(getGlobalPrefix().length()));
             
             event.setCancelled(true);
             return;
@@ -602,7 +597,20 @@ class RealisticChatListener implements Listener {
         return "\u0001"; // C0 Start of Heading (SOH)
     }
 
-    /** Send a properly-formatted chat message, to the user and to other plugins. */
+    /** Send a message to everyone on the server. */
+    public void globallyDeliverMessage(Player sender, String message) {
+        ArrayList<String> sendInfo = new ArrayList<String>();
+        sendInfo.add("global");
+
+        for (Player recipient: Bukkit.getOnlinePlayers()) {
+            deliverMessage(recipient, sender, "global" + getDeviceTag() + message, sendInfo);
+        }
+
+    }
+
+    /** Send a properly-formatted chat message, to the user and to other plugins. 
+    The message can be prefixed with a device name + getDeviceTag() for special formatting.
+    */
     public static void deliverMessage(Player recipient, Player sender, String message, ArrayList<String> info) {
         PlayerChatEvent event = createChatEvent(recipient, sender, message, info);
 
@@ -668,6 +676,8 @@ class RealisticChatListener implements Listener {
                 format = plugin.getConfig().getString("walkieChatLineFormat", "[walkie] %1$s: %2$s");
             } else if (device.equals("cell")) {
                 format = plugin.getConfig().getString("smartphoneChatLineFormat", "[cell] %1$s: %2$s");
+            } else if (device.equals("global")) {
+                format = plugin.getConfig().getString("globalChatLineFormat", "[global] %1$s: %2$s");
             }
         }
 
@@ -753,17 +763,8 @@ class RealisticChatListener implements Listener {
         }
 
         if (event.getMessage().startsWith(getGlobalPrefix())) {
-            ArrayList<String> recvInfo = new ArrayList<String>();
-            recvInfo.add("global");
+            globallyDeliverMessage(event.getPlayer(), event.getMessage().substring(getGlobalPrefix().length()));
 
-            Player sender = event.getPlayer();
-            String message = event.getMessage().substring(getGlobalPrefix().length());
-
-            for (Player recipient: event.getRecipients()) {     // TODO: explicitly loop all online players instead?
-                deliverMessage(recipient, sender, message, recvInfo);
-            }
-            
-            // TODO: pass through for other plugins, or send player chat event globally..
             event.setCancelled(true);
         }
     }

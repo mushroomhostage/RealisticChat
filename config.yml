@@ -34,6 +34,7 @@ walkieGarbleDivisor: 2.0
 walkieChatLineFormat: "[walkie] %1$s: %2$s"
 walkieHearLocally: true
 globalPrefix: '/g '
+globalChatLineFormat: "[global] %1$s: %2$s"
 smartphoneEnable: true
 smartphoneItem: watch
 smartphoneChatLineFormat: "[cell] %1$s: %2$s"
