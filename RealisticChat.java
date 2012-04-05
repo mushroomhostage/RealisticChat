@@ -37,22 +37,26 @@ class SmartphoneCall {
         new SmartphoneRinger(plugin, caller);
         new SmartphoneRinger(plugin, callee);
 
-        // TODO: allow other player to pickup! Keep ringing, then the callee should have to
-        // switch their held item to the smartphone in order to pickup. If they don't pick up
-        // in time, or deny the call (shift-switch?) switch to their voicemail.
-
         //members = new ConcurrentSkipListSet<Player>();
         members = new HashSet<Player>();
         members.add(caller);
         members.add(callee);
+
+        // Tell everyone about the new call
+        ArrayList<String> names = new ArrayList<String>();
+        for (Player member: members) {
+            names.add(member.getDisplayName());
+        }
+        for (Player member: members) {
+            member.sendMessage("Call established: " + RealisticChatListener.joinList(names, ", "));
+        }
+
 
         whenStarted = new Date();
 
         // for lookup
         calls.put(caller, this);
         calls.put(callee, this);
-
-
     }
 
     /** Find the call a player is participating in.
@@ -242,7 +246,16 @@ class RealisticChatListener implements Listener {
                     sender.sendMessage("Say a player name to place a call.");
                 } else {
                     sender.sendMessage("Ringing "+callee.getDisplayName()+"...");
-                    new SmartphoneCall(caller, callee);
+
+                    // TODO: ring until player picks up! Keep ringing, then the callee should have to
+                    // switch their held item to the smartphone in order to pickup. If they don't pick up
+                    // in time, or deny the call (shift-switch?) switch to their voicemail.
+
+                    if (isSmartphone(callee.getItemInHand())) {
+                        new SmartphoneCall(caller, callee);
+                    } else {
+                        sender.sendMessage(callee.getDisplayName() + " did not answer");
+                    }
                 }
             }
 
@@ -265,7 +278,7 @@ class RealisticChatListener implements Listener {
 
         // Log that the player tried to talk
         sendInfo.add("r="+speakingRange);
-        plugin.log.info("<" + sender.getName() + ": "+joinList(sendInfo)+"> "+message);
+        plugin.log.info("<" + sender.getName() + ": "+joinList(sendInfo,",")+"> "+message);
 
         // Send to recipients
         for (Player recipient: event.getRecipients()) {
@@ -494,16 +507,16 @@ class RealisticChatListener implements Listener {
     }
 
 
-    private static String joinList(ArrayList<String> list) {
+    public static String joinList(ArrayList<String> list, String sep) {
         StringBuilder sb = new StringBuilder();
         for (String item: list) {
-            sb.append(item + ",");
+            sb.append(item + sep);
         }
         String s = sb.toString();
         if (s.length() == 0) {
             return "";
         } else {
-            return s.substring(0, s.length() - 1);
+            return s.substring(0, s.length() - sep.length());
         } 
     }
 
@@ -669,7 +682,7 @@ class RealisticChatListener implements Listener {
         // .. but the challenge is avoiding infinite recursion (TODO: tagged messages, don't resend if tagged)
 
 
-        plugin.log.info("[RealisticChat] ("+joinList(info)+") "+sender.getName() + " -> " + recipient.getName() + ": " + message);
+        plugin.log.info("[RealisticChat] ("+joinList(info, ",")+") "+sender.getName() + " -> " + recipient.getName() + ": " + message);
 
         // Output is the message format and message itself, in the event object
         PlayerChatEvent newEvent = new PlayerChatEvent(sender, message);
