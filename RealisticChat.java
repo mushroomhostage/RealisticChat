@@ -594,10 +594,14 @@ class RealisticChatListener implements Listener {
         String format = defaultFormat;
 
         if (holdingBullhorn(sender)) {      // TODO: move to device tagging on message like walkie/cell
-            format = String.format(plugin.getConfig().getString("bullhornChatLineFormat", "%1$s [%3$s]: %2$s"),
-                    "%1$s",
-                    "%2$s", 
-                    bullhornDirection(recipient, sender));
+            String direction = bullhornDirection(recipient, sender);
+
+            if (direction != null && !direction.equals("")) {
+                format = String.format(plugin.getConfig().getString("bullhornChatLineFormat", "%1$s [%3$s]: %2$s"),
+                        "%1$s",
+                        "%2$s", 
+                        direction);
+            }
         }
 
 
