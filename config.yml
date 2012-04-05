@@ -37,3 +37,4 @@ globalPrefix: '/g '
 smartphoneEnable: true
 smartphoneItem: watch
 smartphoneChatLineFormat: "[cell] %1$s: %2$s"
+smartphoneHearLocally: true

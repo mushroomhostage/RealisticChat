@@ -229,6 +229,12 @@ class RealisticChatListener implements Listener {
             if (call != null) {
                 // We're on a call!
                 call.say(sender, message);
+
+                if (!plugin.getConfig().getBoolean("smartphoneHearLocally", true)) {
+                    return;
+                }
+                // fall through and say locally too
+
             } else {
                 // Talking to voice-activated phone
                 // TODO: natural language processing

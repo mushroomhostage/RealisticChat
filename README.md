@@ -144,3 +144,6 @@ normal chat (example: '@'). Set to null to disable.
 **smartphoneChatLineFormat** ("[cell] %1$s: %2$s"): Messages received from smartphones will
 be formatted using this format string. See also chatLineFormat.
 
+**smartphoneHearLocally** (true): When talking into a smartphone, allow other people nearby to 
+overhear you. See also walkieHearLocally.
+
