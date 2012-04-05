@@ -30,8 +30,8 @@ walkieEnable: true
 walkieItem: compass
 walkieRangeMeters: 2000.0
 walkieGarbleDivisor: 2.0
-walkieChatLineFormat: "[walkie] %1$s: %2$s"     # TODO: document
+walkieChatLineFormat: "[walkie] %1$s: %2$s"
 globalPrefix: '/g '
 smartphoneEnable: true
 smartphoneItem: watch
-smartphoneChatLineFormat: "[cell] %1$s: %2$s"   # TODO: document
+smartphoneChatLineFormat: "[cell] %1$s: %2$s"

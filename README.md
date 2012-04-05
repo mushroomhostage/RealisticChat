@@ -121,7 +121,17 @@ messages will be garbled depending on walkieGarbleDivisor.
 Using the defaults, beyond 2000.0/2 = 1000 m the messages will break up, and from 0 - 1000 m, messages 
 will be clear.
 
+**walkieChatLineFormat** ("[walkie] %1$s: %2$s"): Messages received from walkie-talkies will
+be formatted using this format string. See also chatLineFormat.
+
 **globalPrefix** ('/g '): Messages beginning this prefix will be delivered globally, regardless
 of local chat restrictions. You can either use a command (examples: '/g ' or '/s '), or a prefix in
 normal chat (example: '@'). Set to null to disable.
+
+**smartphoneEnable** (true): Enable smartphones.
+
+**smartphoneItem** (watch): Item to use to represent a smartphone.
+
+**smartphoneChatLineFormat** ("[cell] %1$s: %2$s"): Messages received from smartphones will
+be formatted using this format string. See also chatLineFormat.
 

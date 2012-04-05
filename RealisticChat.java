@@ -568,8 +568,11 @@ class RealisticChatListener implements Listener {
         return new String(newMessage);
     }
 
+    /** Get a special character used to separate device name from chat message.
+    Should never appear in normal chat.
+    */
     public static String getDeviceTag() {
-        return plugin.getConfig().getString("chatDeviceTag", "|"); // TODO: special character
+        return "\u0001"; // C0 Start of Heading (SOH)
     }
 
     public static void deliverMessage(Player recipient, Player sender, String message, ArrayList<String> info) {
