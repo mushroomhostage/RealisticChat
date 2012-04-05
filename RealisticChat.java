@@ -158,6 +158,11 @@ class RealisticChatListener implements Listener {
         Player sender = event.getPlayer();
         String message = event.getMessage();
 
+        if (message.startsWith(getDeviceTag())) {
+            // we made this event.. don't recurse! let it pass through
+            return;
+        }
+
         ArrayList<String> sendInfo = new ArrayList<String>();
 
         // First, global prefix overrides all
@@ -575,10 +580,42 @@ class RealisticChatListener implements Listener {
         return "\u0001"; // C0 Start of Heading (SOH)
     }
 
+    /** Send a properly-formatted chat message, to the user and to other plugins. */
     public static void deliverMessage(Player recipient, Player sender, String message, ArrayList<String> info) {
-        // TODO: all configurable
+        PlayerChatEvent event = createChatEvent(recipient, sender, message, info);
+
+        callChatEvent(event);
+    }
+
+    private static void callChatEvent(PlayerChatEvent event) {
+        // Tag the message so we know it is ours..
+        event.setMessage(getDeviceTag() + event.getMessage());
+
+        // Allow other plugins to process event
+        Bukkit.getServer().getPluginManager().callEvent(event);
+
+        if (event.isCancelled()) {
+            plugin.log.info(" ignoring chat event cancelled by other plugin: " + event);
+            return;
+        }
+
+        // Deliver (possibly modified) chat to player as message
+        // based on src/main/java/net/minecraft/server/NetServerHandler.java : chat()
+        String s = String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage());
+
+        // Strip the tag completely from the message, wherever it might be
+        s = s.replace(getDeviceTag(), "");
+
+        //minecraftServer.console.sendMessage(s);   // TODO
+        for (Player recipient : event.getRecipients()) {
+            recipient.sendMessage(s);
+        }
+    }
+
+    /** Synthesize a new chat event between two players, with customized formatting.
+    */
+    private static PlayerChatEvent createChatEvent(Player recipient, Player sender, String message, ArrayList<String> info) {
         ChatColor senderColor = (sender.equals(recipient) ? plugin.spokenPlayerColor : plugin.heardPlayerColor);
-        String prefix = "";
 
         String device = null;
 
@@ -598,12 +635,11 @@ class RealisticChatListener implements Listener {
 
             if (direction != null && !direction.equals("")) {
                 format = String.format(plugin.getConfig().getString("bullhornChatLineFormat", "%1$s [%3$s]: %2$s"),
-                        "%1$s",
-                        "%2$s", 
+                        "%1$s", // player, replaced below
+                        "%2$s", // message, replaced below
                         direction);
             }
         }
-
 
         if (device != null) {
             if (device.equals("walkie")) {
@@ -617,12 +653,13 @@ class RealisticChatListener implements Listener {
             format = defaultFormat;
         }
 
-        // Format the message
-        String formattedMessage = String.format(format, 
-            senderColor + sender.getDisplayName() + plugin.messageColor,
-            prefix + message);
+        // Add player name color to format string
+        format = String.format(format, senderColor + "%1$s" + plugin.messageColor, "%2$s");
 
-        recipient.sendMessage(formattedMessage);
+        // Format the message
+        //String formattedMessage = String.format(format, senderColor + sender.getDisplayName() + plugin.messageColor, message);
+        //plugin.log.info(formattedMessage);
+        //recipient.sendMessage(formattedMessage);
 
         // TODO: instead, use recipient.chat() and PlayerChatEvent setFormat(), so other plugins see the chat, too
         // or, construct a PlayerChatEvent and send it ourselves so other plugins can format messages from cells/walkies
@@ -630,7 +667,16 @@ class RealisticChatListener implements Listener {
 
 
         plugin.log.info("[RealisticChat] ("+joinList(info)+") "+sender.getName() + " -> " + recipient.getName() + ": " + message);
-        //plugin.log.info(formattedMessage);
+
+        // Output is the message format and message itself, in the event object
+        PlayerChatEvent newEvent = new PlayerChatEvent(sender, message);
+
+        newEvent.getRecipients().clear();
+        newEvent.getRecipients().add(recipient);
+
+        newEvent.setFormat(format);
+
+        return newEvent;
     }
    
     /** Get the direction a bullhorn-amplified message came from, if possible.
