@@ -49,7 +49,17 @@ and speak as normal, and your voice will be clearly transmitted through the devi
 to other players holding a compass anywhere in their *hotbar*. Walkie Talkies are especially
 useful for keeping in touch with other players while travelling.
 
-All distances are configurable to your liking; see below.
+For private one-to-one communication, use a **smartphone** (clock). Hold the clock in your *hand*,
+and use speak into it the name of a player you want to call. Its high-tech *voice activated calling*
+capabilities will cause the device to ring up the player, as long as they are also holding a 
+smartphone. Once the call is established anything said will also be transferred over the air
+to the other player. You can hang up the call by moving your hand to another item. Note that 
+other players can overhear you if they are nearby, just as if you are talking
+normally, so be sure to go somewhere far away or use whispering if you really want your
+conversation to be private (but this feature can be disabled if desired, see below). Smartphones
+are very primitive at the moment, please report any problems or suggested enhancements.
+
+All distances, items, and other parameters are configurable to your liking; see below.
 
 ## Commands and Permissions
 None
