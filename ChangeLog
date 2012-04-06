@@ -1,9 +1,9 @@
-X   1.2
-    * Add smartphones, for secure private one-to-one communication
+2012-04-05  1.2
+    * Add initial implementation of smartphones, for secure private one-to-one communication
     * Add custom chat line formats for devices (global, bullhorn, walkie, smartphone)
     * Add options to disable overhearing walkies and smartphones
     * Send chat events to other plugins
-    * Built with 1.2.5-R1.0
+    * Tested on 1.2.5-R1.0
     
 2012-03-27  1.1
     * Add bullhorn, with directional amplification in front of player (replaces megaphone)
