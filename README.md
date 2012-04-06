@@ -2,7 +2,7 @@ CakeMushroom's RealisticChat - realistic local chat!
 
 *a collaboration of cakenggt and mushroomhostage*
 
-***New! [RealisticChat 1.1](http://dev.bukkit.org/server-mods/realisticchat/files/3-realistic-chat-1-1/)*** - **released 2012/03/27, adds directional bullhorns, global chat, more configurability – 1.2.4 development builds supported**
+***New! [RealisticChat 1.2](http://dev.bukkit.org/server-mods/realisticchat/files/4-realistic-chat-1-2/)*** - released 2012/04/05, now with smartphones, various fixes, and more configuration - supports 1.2.5-R1.0
 
 Features:
 
