@@ -745,7 +745,7 @@ class RealisticChatListener implements Listener {
 
         if (isSmartphone(held)) {
             // TODO: if phone is ringing, answer it! (player switched to phone to pick it up)
-            player.sendMessage("Switched to smartphone");
+            //player.sendMessage("Switched to smartphone");
         } else {
             // Switching off of phone hangs it up
             // TODO: other ways to hangup.. dropped item?
