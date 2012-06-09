@@ -35,41 +35,35 @@ class SmartphoneCall {
     // set of all ringtones for each member, when call()ing someone new
     public HashSet<SmartphoneRinger> ringers;
 
-    public SmartphoneCall(Player caller, Player callee) {
-        // ringing tone
-        new SmartphoneRinger(plugin, caller);
-        new SmartphoneRinger(plugin, callee);
-
+    /** Create a new call, with only one player. */
+    public SmartphoneCall(Player caller) {
         //members = new ConcurrentSkipListSet<Player>();
         members = new HashSet<Player>();
         members.add(caller);
-        members.add(callee);
 
-        // Tell everyone about the new call
-        ArrayList<String> names = new ArrayList<String>();
-        for (Player member: members) {
-            names.add(member.getDisplayName());
-        }
-        for (Player member: members) {
-            member.sendMessage("Call established: " + RealisticChatListener.joinList(names, ", "));
-        }
-
-
+        // unfortunately, this is the time started calling not answered..
+        // will be reset in answer()
         whenStarted = new Date();
 
         // for lookup
         calls.put(caller, this);
-        calls.put(callee, this);
 
         ringers = new HashSet<SmartphoneRinger>();
     }
 
-    /** Try to establish a call with a new callee
+    /** Try to establish a call with a new callee.
      */
     public void call(Player callee) {
         stopRinging();
 
-        // ringing tone for everyone already online
+        // If they're already holding the phone, they answer immediately!
+        if (plugin.listener.isSmartphone(callee.getItemInHand())) {
+            answer(callee);
+            return;
+        }
+        // Otherwise, we need to ring them until they answer
+
+        // Ringing tone for everyone already online
         for (Player member: members) {
             ringers.add(new SmartphoneRinger(plugin, member));
         }
@@ -78,14 +72,41 @@ class SmartphoneCall {
         // Track everyone hearing the ringing for this callee, including callee itself
         ringers.add(calleeRinger);
 
+        callee.sendMessage("Incoming call from "+getNames()+", pickup a smartphone to answer");
+
         // Call which will be established if they answer!
         ringingCall.put(callee, this);
     }
 
+    /** Answer (pickup) a ringing call. */
     public void answer(Player callee) {
+        // TODO: what timestamp to record for 3-way (or greater) calling?
+        whenStarted = new Date();
+
+        ringingCall.remove(callee);
+
         stopRinging();
         members.add(callee);
+
+        // for lookup
+        calls.put(callee, this);
+
+        // Tell everyone about the new call
+        String names = getNames();
+        for (Player member: members) {
+            member.sendMessage("Call established: " + names);
+        }
     }
+
+    /** Get string of a list of names in the call. */
+    public String getNames() {
+        ArrayList<String> names = new ArrayList<String>();
+        for (Player member: members) {
+            names.add(member.getDisplayName());
+        }
+        return RealisticChatListener.joinList(names, ", ");
+    }
+
     
     private void stopRinging() {
         for (SmartphoneRinger ringer: ringers) {
@@ -297,6 +318,7 @@ class RealisticChatListener implements Listener {
                     // switch their held item to the smartphone in order to pickup. If they don't pick up
                     // in time, or deny the call (shift-switch?) switch to their voicemail.
 
+                    call = new SmartphoneCall(caller);
                     call.call(callee);
                     // will be picked up on item change, if any
 
@@ -832,7 +854,7 @@ class RealisticChatListener implements Listener {
 
     /** Get whether the item is a smart phone device.
     */
-    private boolean isSmartphone(ItemStack item) {
+    public boolean isSmartphone(ItemStack item) {
         if (!plugin.getConfig().getBoolean("smartphoneEnable", true)) {
             return false;
         }
