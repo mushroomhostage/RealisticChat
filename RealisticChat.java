@@ -24,13 +24,12 @@ import org.bukkit.block.*;
 import org.bukkit.*;
 
 class SmartphoneCall {
-    static RealisticChat plugin;
-
-    static ConcurrentHashMap<Player, SmartphoneCall> calls = new ConcurrentHashMap<Player, SmartphoneCall>();
+    public static RealisticChat plugin;
+    public static ConcurrentHashMap<Player, SmartphoneCall> calls = new ConcurrentHashMap<Player, SmartphoneCall>();
 
     //ConcurrentSkipListSet<Player> members; // not Comparable
-    HashSet<Player> members;
-    Date whenStarted, whenEnded;
+    public HashSet<Player> members;
+    public Date whenStarted, whenEnded;
 
     public SmartphoneCall(Player caller, Player callee) {
         // ringing tone
@@ -58,6 +57,17 @@ class SmartphoneCall {
         calls.put(caller, this);
         calls.put(callee, this);
     }
+
+    /** Try to establish a call with a new callee
+     */
+     /* TODO
+    public ring(Player callee) {
+        // ringing tone for everyone already online
+        for (Player member: members) {
+            new SmartphoneRinger(plugin, member);
+        }
+        // TODO
+    }*/
 
     /** Find the call a player is participating in.
     */
@@ -143,6 +153,10 @@ class SmartphoneRinger implements Runnable {
             Block lastBlock = noteblockLocation.getBlock();
             player.sendBlockChange(noteblockLocation, lastBlock.getType(), lastBlock.getData());
         }
+    }
+
+    public void stop() {
+        Bukkit.getScheduler().cancelTask(taskId);
     }
 }
 
