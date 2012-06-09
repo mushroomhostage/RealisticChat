@@ -12,7 +12,7 @@ Features:
 * Bullhorns
 * Ear trumpets
 * Walkie-talkies
-* Global chat prefix
+* Smartphones
 
 ## Basic Usage
 Talk normally. You'll only be able to clearly hear other players within 25 meters.
@@ -162,3 +162,16 @@ be formatted using this format string. See also chatLineFormat.
 overhear you. See also walkieHearLocally.
 
 **smartphoneRings** (4): Number of times to ring smartphone when calling a player before they answer.
+
+## Permissions
+
+All permissions default to true. 
+
+realisticchat.yell: Allows you to yell
+realisticchat.whisper: Allows you to whisper
+realisticchat.bullhorn: Allows you to speak into bullhorns
+realisticchat.eartrumpet: Allows you to wear ear trumpets and hear better
+realisticchat.walkie.talk: Allows you to talk into walkie-talkies
+realisticchat.walkie.hear: Allows you to hear from walkie-talkies
+realisticchat.smartphone.call: Allows you to place calls with your smartphone
+realisticchat.smartphone.answer: Allows you to answer calls with your smartphone

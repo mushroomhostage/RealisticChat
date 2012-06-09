@@ -1,5 +1,6 @@
 2012-06-09  2.0
     * Add ringing and answering to smartphones
+    * Add permissions support
     * Fix yellMax 0 not turning off yelling
 
 2012-04-05  1.2

@@ -4,3 +4,40 @@ version: 2.0
 website: http://dev.bukkit.org/server-mods/realisticchat/
 description: realistic local chat!
 authors: [cakenggt, mushroomhostage]
+permissions:
+    realisticchat.*:
+        children:
+            realisticchat.yell: true
+            realisticchat.whisper: true
+            realisticchat.bullhorn: true
+            realisticchat.eartrumpet: true
+            realisticchat.walkie.talk: true
+            realisticchat.walkie.hear: true
+            realisticchat.smartphone.call: true
+            realisticchat.smartphone.answer: true
+        default: false
+    realisticchat.yell:
+        description: Allows you to yell 
+        default: true
+    realisticchat.whisper:
+        description: Allows you to whisper
+        default: true
+    realisticchat.bullhorn:
+        description: Allows you to speak into bullhorns
+        default: true
+    realisticchat.eartrumpet:
+        description: Allows you to wear ear trumpets and hear better
+        default: true
+    realisticchat.walkie.talk:
+        description: Allows you to talk into walkie-talkies
+        default: true
+    realisticchat.walkie.hear:
+        description: Allows you to hear from walkie-talkies
+        default: true
+    realisticchat.smartphone.call:
+        description: Allows you to place calls with your smartphone
+        default: true
+    realisticchat.smartphone.answer:
+        description: Allows you to answer calls with your smartphone
+        default: true
+

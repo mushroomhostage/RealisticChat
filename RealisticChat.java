@@ -260,7 +260,7 @@ class RealisticChatListener implements Listener {
         // Yelling costs hunger and increases range
         int yell = countExclamationMarks(message);
         yell = Math.min(yell, plugin.getConfig().getInt("yellMax", 4));
-        if (yell > 0) {
+        if (yell > 0 && sender.hasPermission("realisticchat.yell")) {
             sendInfo.add("yell="+yell);
 
             final int defaultHunger[] = { 1, 2, 4, 20 };
@@ -275,7 +275,7 @@ class RealisticChatListener implements Listener {
 
         // Whispering decreases range
         int whisper = countParenthesizeNests(message);
-        if (whisper > 0) {
+        if (whisper > 0 && sender.hasPermission("realisticchat.whisper")) {
             sendInfo.add("whisper="+whisper);
 
             speakingRange -= plugin.getConfig().getDouble("whisperRangeDecrease", 40.0) * whisper;
@@ -301,7 +301,8 @@ class RealisticChatListener implements Listener {
                     return;
                 }
                 // fall through and say locally too
-
+            } else if (!sender.hasPermission("realisticchat.smartphone.call")) {
+                //sender.sendMessage("You do not have permission to make calls");
             } else {
                 // Talking to voice-activated phone
                 // TODO: natural language processing
@@ -320,6 +321,8 @@ class RealisticChatListener implements Listener {
                 } else if (callee.equals(caller)) {
                     // Tried to call self..
                     sender.sendMessage("Busy signal");
+                } else if (!callee.hasPermission("realisticchat.smartphone.answer")) {   // TODO: move to call()?
+                    sender.sendMessage(callee.getDisplayName() + " does not have permission to answer calls");
                 } else {
                     sender.sendMessage("Ringing "+callee.getDisplayName()+"...");
 
@@ -464,7 +467,7 @@ class RealisticChatListener implements Listener {
 
             // Ear trumpets increase hearing range only
             double earTrumpetRange = getEarTrumpetRange(recipient);
-            if (earTrumpetRange != 0) {
+            if (earTrumpetRange != 0 && sender.hasPermission("realisticchat.eartrumpet")) {
                 recvInfo.add("ear="+earTrumpetRange);
                 hearingRange += earTrumpetRange;
             }
@@ -510,6 +513,9 @@ class RealisticChatListener implements Listener {
         if (!plugin.getConfig().getBoolean("walkieEnable", true)) {
             return false;
         }
+        if (!player.hasPermission("realisticchat.walkie.talk")) {
+            return false;
+        }
 
         ItemStack held = player.getItemInHand();
         
@@ -520,6 +526,9 @@ class RealisticChatListener implements Listener {
     */
     private static boolean hasWalkieListening(Player player) {
         if (!plugin.getConfig().getBoolean("walkieEnable", true)) {
+            return false;
+        }
+        if (!player.hasPermission("realisticchat.walkie.hear")) {
             return false;
         }
 
@@ -542,6 +551,9 @@ class RealisticChatListener implements Listener {
     */
     private static boolean holdingBullhorn(Player player) {
         if (!plugin.getConfig().getBoolean("bullhornEnable", true)) {
+            return false;
+        }
+        if (!player.hasPermission("realisticchat.bullhorn")) {
             return false;
         }
 
@@ -876,9 +888,6 @@ class RealisticChatListener implements Listener {
     public boolean holdingSmartphone(Player player) {
         return isSmartphone(player.getItemInHand());
     }
-
-    // TODO: check if in inventory
-    //private boolean hasSmartphone()
 }
 
 public class RealisticChat extends JavaPlugin { 
