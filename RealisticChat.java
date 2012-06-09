@@ -202,20 +202,20 @@ class SmartphoneRinger implements Runnable {
                 player.playNote(noteblockLocation, Instrument.PIANO, note);
             }
         } else {
-            Bukkit.getScheduler().cancelTask(taskId);
-
-            // Revert temporary noteblock
-            Block lastBlock = noteblockLocation.getBlock();
-            player.sendBlockChange(noteblockLocation, lastBlock.getType(), lastBlock.getData());
-
-            // No longer eligible to answer
-            SmartphoneCall.ringingCall.remove(player);
+            stop();
         }
     }
 
     /** Stop ringing, either because call was established or did not answer. */
     public void stop() {
         Bukkit.getScheduler().cancelTask(taskId);
+
+        // Revert temporary noteblock
+        Block lastBlock = noteblockLocation.getBlock();
+        player.sendBlockChange(noteblockLocation, lastBlock.getType(), lastBlock.getData());
+
+        // No longer eligible to answer
+        SmartphoneCall.ringingCall.remove(player);
     }
 }
 
@@ -259,9 +259,8 @@ class RealisticChatListener implements Listener {
 
         // Yelling costs hunger and increases range
         int yell = countExclamationMarks(message);
+        yell = Math.min(yell, plugin.getConfig().getInt("yellMax", 4));
         if (yell > 0) {
-            yell = Math.min(yell, plugin.getConfig().getInt("yellMax", 4));
-
             sendInfo.add("yell="+yell);
 
             final int defaultHunger[] = { 1, 2, 4, 20 };
