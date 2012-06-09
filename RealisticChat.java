@@ -207,6 +207,9 @@ class SmartphoneRinger implements Runnable {
             // Revert temporary noteblock
             Block lastBlock = noteblockLocation.getBlock();
             player.sendBlockChange(noteblockLocation, lastBlock.getType(), lastBlock.getData());
+
+            // No longer eligible to answer
+            SmartphoneCall.ringingCall.remove(player);
         }
     }
 
