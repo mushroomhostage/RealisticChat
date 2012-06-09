@@ -26,12 +26,14 @@ import org.bukkit.*;
 class SmartphoneCall {
     public static RealisticChat plugin;
     public static ConcurrentHashMap<Player, SmartphoneCall> calls = new ConcurrentHashMap<Player, SmartphoneCall>();
-    public static ConcurrentHashMap<Player, HashSet<SmartphoneRinger>> ringers = new ConcurrentHashMap<Player, HashSet<SmartphoneRinger>>();
     public static ConcurrentHashMap<Player, SmartphoneCall> ringingCall = new ConcurrentHashMap<Player, SmartphoneCall>();
 
     //ConcurrentSkipListSet<Player> members; // not Comparable
     public HashSet<Player> members;
     public Date whenStarted, whenEnded;
+
+    // set of all ringtones for each member, when call()ing someone new
+    public HashSet<SmartphoneRinger> ringers;
 
     public SmartphoneCall(Player caller, Player callee) {
         // ringing tone
@@ -58,26 +60,43 @@ class SmartphoneCall {
         // for lookup
         calls.put(caller, this);
         calls.put(callee, this);
+
+        ringers = new HashSet<SmartphoneRinger>();
     }
 
     /** Try to establish a call with a new callee
      */
     public void call(Player callee) {
-        HashSet<SmartphoneRinger> rings = new HashSet<SmartphoneRinger>();
+        stopRinging();
 
         // ringing tone for everyone already online
         for (Player member: members) {
-            rings.add(new SmartphoneRinger(plugin, member));
+            ringers.add(new SmartphoneRinger(plugin, member));
         }
 
         SmartphoneRinger calleeRinger = new SmartphoneRinger(plugin, callee);
-        rings.add(calleeRinger);
-
-        // Track everyone hearing the ringing for this callee
-        ringers.put(callee, rings);
+        // Track everyone hearing the ringing for this callee, including callee itself
+        ringers.add(calleeRinger);
 
         // Call which will be established if they answer!
         ringingCall.put(callee, this);
+    }
+
+    public void answer(Player callee) {
+        stopRinging();
+        members.add(callee);
+    }
+    
+    private void stopRinging() {
+        for (SmartphoneRinger ringer: ringers) {
+            ringer.stop();
+        }
+        ringers.clear();
+    }
+
+    /** Get the call ringing to a player, or null if no one is calling. */
+    public static SmartphoneCall getRingingCall(Player callee) {
+        return ringingCall.get(callee);
     }
 
     /** Find the call a player is participating in.
@@ -278,11 +297,17 @@ class RealisticChatListener implements Listener {
                     // switch their held item to the smartphone in order to pickup. If they don't pick up
                     // in time, or deny the call (shift-switch?) switch to their voicemail.
 
+                    call.call(callee);
+                    // will be picked up on item change, if any
+
+                    /*
+
                     if (isSmartphone(callee.getItemInHand())) {
                         new SmartphoneCall(caller, callee);
                     } else {
                         sender.sendMessage(callee.getDisplayName() + " did not answer");
                     }
+                    */
                 }
             }
 
@@ -770,8 +795,11 @@ class RealisticChatListener implements Listener {
         ItemStack held = player.getInventory().getItem(slot);
 
         if (isSmartphone(held)) {
-            // TODO: if phone is ringing, answer it! (player switched to phone to pick it up)
-            //player.sendMessage("Switched to smartphone");
+            SmartphoneCall pendingCall = SmartphoneCall.getRingingCall(player);
+            if (pendingCall != null) {
+                player.sendMessage("Answering call");
+                pendingCall.answer(player);
+            }
         } else {
             // Switching off of phone hangs it up
             // TODO: other ways to hangup.. dropped item?
