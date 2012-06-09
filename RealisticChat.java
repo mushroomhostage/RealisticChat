@@ -26,6 +26,7 @@ import org.bukkit.*;
 class SmartphoneCall {
     public static RealisticChat plugin;
     public static ConcurrentHashMap<Player, SmartphoneCall> calls = new ConcurrentHashMap<Player, SmartphoneCall>();
+    public static ConcurrentHashMap<Player, HashSet<SmartphoneRinger>> ringers = new ConcurrentHashMap<Player, HashSet<SmartphoneRinger>>();
 
     //ConcurrentSkipListSet<Player> members; // not Comparable
     public HashSet<Player> members;
@@ -33,8 +34,8 @@ class SmartphoneCall {
 
     public SmartphoneCall(Player caller, Player callee) {
         // ringing tone
-        new SmartphoneRinger(plugin, caller);
-        new SmartphoneRinger(plugin, callee);
+        new SmartphoneRinger(plugin, caller, this);
+        new SmartphoneRinger(plugin, callee, this);
 
         //members = new ConcurrentSkipListSet<Player>();
         members = new HashSet<Player>();
@@ -60,14 +61,20 @@ class SmartphoneCall {
 
     /** Try to establish a call with a new callee
      */
-     /* TODO
-    public ring(Player callee) {
+    public void call(Player callee) {
+        HashSet<SmartphoneRinger> rings = new HashSet<SmartphoneRinger>();
+
         // ringing tone for everyone already online
         for (Player member: members) {
-            new SmartphoneRinger(plugin, member);
+            rings.add(new SmartphoneRinger(plugin, member, this));
         }
-        // TODO
-    }*/
+
+        SmartphoneRinger calleeRinger = new SmartphoneRinger(plugin, callee, this);
+        rings.add(calleeRinger);
+
+        // Track everyone hearing the ringing for this callee
+        ringers.put(callee, rings);
+    }
 
     /** Find the call a player is participating in.
     */
@@ -114,10 +121,12 @@ class SmartphoneRinger implements Runnable {
     private final int taskId;
     private final Player player;
     private final RealisticChat plugin;
+    private final SmartphoneCall call;
 
-    public SmartphoneRinger(RealisticChat plugin, Player player) {
+    public SmartphoneRinger(RealisticChat plugin, Player player, SmartphoneCall call) {
         this.plugin = plugin;
         this.player = player;
+        this.call = call;
 
         // Place a temporary noteblock above the player's head, required by the client to play a note
         // For why we do this see http://forums.bukkit.org/threads/player-playnote-is-it-broken.65404/#post-1023374
@@ -155,8 +164,14 @@ class SmartphoneRinger implements Runnable {
         }
     }
 
+    /** Stop ringing, either because call was established or did not answer. */
     public void stop() {
         Bukkit.getScheduler().cancelTask(taskId);
+    }
+
+    /** Get the call associated with this ringer. */
+    public SmartphoneCall getCall() {
+        return call;
     }
 }
 
