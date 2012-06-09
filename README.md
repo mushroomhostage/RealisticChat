@@ -160,3 +160,4 @@ be formatted using this format string. See also chatLineFormat.
 **smartphoneHearLocally** (true): When talking into a smartphone, allow other people nearby to 
 overhear you. See also walkieHearLocally.
 
+**smartphoneRings** (4): Number of times to ring smartphone when calling a player before they answer.

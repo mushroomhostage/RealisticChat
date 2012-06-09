@@ -57,7 +57,7 @@ class SmartphoneCall {
         stopRinging();
 
         // If they're already holding the phone, they answer immediately!
-        if (plugin.listener.isSmartphone(callee.getItemInHand())) {
+        if (plugin.listener.holdingSmartphone(callee)) {
             answer(callee);
             return;
         }
@@ -178,10 +178,13 @@ class SmartphoneRinger implements Runnable {
 
         List<Note> notes = new ArrayList<Note>();
         // TODO: more phone-like ringing!
-        notes.add(new Note(1, Note.Tone.A, false));
-        notes.add(new Note(1, Note.Tone.A, true));
-        notes.add(new Note(1, Note.Tone.A, false));
-        notes.add(new Note(1, Note.Tone.A, false));
+        for (int i = 0; i < plugin.getConfig().getInt("smartphoneRings", 4); i += 1) {
+            notes.add(new Note(1, Note.Tone.A, false));
+            notes.add(new Note(1, Note.Tone.A, true));
+            notes.add(new Note(1, Note.Tone.A, false));
+            notes.add(new Note(1, Note.Tone.A, false));
+            notes.add(null);
+        }
 
         notesIterator = notes.iterator();
 
@@ -195,8 +198,9 @@ class SmartphoneRinger implements Runnable {
         if (notesIterator.hasNext()) {
             Note note = notesIterator.next();
 
-            //plugin.log.info("Play note " + note);
-            player.playNote(noteblockLocation, Instrument.PIANO, note);
+            if (note != null) {
+                player.playNote(noteblockLocation, Instrument.PIANO, note);
+            }
         } else {
             Bukkit.getScheduler().cancelTask(taskId);
 
@@ -311,6 +315,9 @@ class RealisticChatListener implements Listener {
                     // TODO: ring but have no one pick up? Your call cannot be completed as dialed.
                     sender.sendMessage("Sorry, I don't understand '"+calleeName+"'");
                     sender.sendMessage("Say a player name to place a call.");
+                } else if (callee.equals(caller)) {
+                    // Tried to call self..
+                    sender.sendMessage("Busy signal");
                 } else {
                     sender.sendMessage("Ringing "+callee.getDisplayName()+"...");
 
@@ -854,7 +861,7 @@ class RealisticChatListener implements Listener {
 
     /** Get whether the item is a smart phone device.
     */
-    public boolean isSmartphone(ItemStack item) {
+    private boolean isSmartphone(ItemStack item) {
         if (!plugin.getConfig().getBoolean("smartphoneEnable", true)) {
             return false;
         }
@@ -864,7 +871,7 @@ class RealisticChatListener implements Listener {
 
     /** Get whether the player is holding their smartphone, possibly speaking into it.
     */
-    private boolean holdingSmartphone(Player player) {
+    public boolean holdingSmartphone(Player player) {
         return isSmartphone(player.getItemInHand());
     }
 
