@@ -1,3 +1,6 @@
+X   X
+    * Fix smartphone ringing jukebox world protection bypass (do not ring if blocked)
+
 2012-06-09  2.0
     * Add ringing and answering to smartphones
     * Add permissions support

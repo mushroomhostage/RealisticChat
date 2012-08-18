@@ -174,7 +174,11 @@ class SmartphoneRinger implements Runnable {
         // For why we do this see http://forums.bukkit.org/threads/player-playnote-is-it-broken.65404/#post-1023374
         // TODO: what if player is at build limit?
         noteblockLocation  = player.getLocation().add(0, 2, 0);
-        player.sendBlockChange(noteblockLocation, Material.NOTE_BLOCK, (byte)0);
+        Block oldBlock = noteblockLocation.getBlock();
+        if (oldBlock == null || oldBlock.getType() == Material.AIR) {
+            // only send note block if not another in its place, to prevent bypassing world protections
+            player.sendBlockChange(noteblockLocation, Material.NOTE_BLOCK, (byte)0);
+        }
 
         List<Note> notes = new ArrayList<Note>();
         // TODO: more phone-like ringing!
